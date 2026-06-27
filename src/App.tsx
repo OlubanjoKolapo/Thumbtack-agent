@@ -10,6 +10,7 @@ import { Results } from './pages/Results';
 import { Approve } from './pages/Approve';
 import { Confirmed } from './pages/Confirmed';
 import { Track } from './pages/Track';
+import { Demo } from './pages/Demo';
 
 const App: React.FC = () => {
   return (
@@ -25,6 +26,7 @@ const App: React.FC = () => {
             <Route path="/approve" element={<Approve />} />
             <Route path="/confirmed" element={<Confirmed />} />
             <Route path="/track" element={<Track />} />
+            <Route path="/demo" element={<Demo />} />
             {/* Fallback route */}
             <Route path="*" element={<Landing />} />
           </Routes>

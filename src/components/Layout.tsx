@@ -36,16 +36,22 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
           </Link>
 
           {/* Right utilities navigation */}
-          <nav className="flex items-center gap-4 md:gap-6 text-sm text-tt-navy font-semibold">
+          <nav className="flex items-center gap-4 md:gap-6 text-[15px] text-tt-navy font-semibold">
             <Link to="/connect" className="hover:text-tt-blue hidden sm:inline-block transition-colors">
               Connect Agent
             </Link>
             <Link to="/request" className="hover:text-tt-blue transition-colors">
               New Request
             </Link>
+            <Link to="/demo" className="flex items-center gap-1 hover:text-tt-blue transition-colors">
+              Demo
+              <span className="text-[12px] font-bold text-tt-blue bg-tt-blue-tint border border-tt-blue/40 px-2 py-0.5 rounded-full shadow-sm scale-90 select-none">
+                Demo
+              </span>
+            </Link>
             <Link 
               to="/connect"
-              className="bg-tt-dark text-white text-xs md:text-sm px-4 py-2 rounded-full hover:bg-tt-blue transition-colors"
+              className="bg-tt-dark text-white text-[12px] md:text-[15px] px-4 py-2 rounded-full hover:bg-tt-blue transition-colors active-press shadow-sm"
             >
               Try Tack →
             </Link>

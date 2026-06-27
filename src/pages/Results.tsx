@@ -32,51 +32,50 @@ export const Results: React.FC = () => {
     navigate('/request');
   };
 
-  // Format headers / subtext info
   const displaySummary = `3 pros found · Saturday AM · under $${spendLimit}`;
 
   return (
     <div className="flex-grow bg-tt-page min-h-screen pb-16 animate-page-in font-sans">
       
-      {/* Top filter navigation bar */}
-      <div className="bg-white border-b border-tt-border h-[60px] px-4 md:px-8">
+      {/* Glassmorphic Sticky Filter Nav Bar */}
+      <div className="bg-white/90 backdrop-blur-md border-b border-tt-border h-[60px] px-4 md:px-8 sticky top-[60px] z-30 shadow-[0_2px_8px_rgba(28,43,51,0.02)]">
         <div className="max-w-[720px] mx-auto h-full flex items-center justify-between">
           {/* Back button */}
           <button
             onClick={handleBack}
-            className="flex items-center gap-1.5 text-[15px] font-semibold text-tt-navy hover:text-tt-blue cursor-pointer"
+            className="flex items-center gap-1.5 text-[15px] font-bold text-tt-navy hover:text-tt-blue cursor-pointer transition-colors"
           >
             <ArrowLeft size={16} className="stroke-[2.5]" />
             New request
           </button>
 
           {/* Matches overview */}
-          <span className="text-[12px] md:text-[15px] text-tt-muted font-medium select-none truncate">
+          <span className="text-[12px] text-tt-muted font-bold tracking-wide uppercase select-none hidden sm:inline-block">
             {displaySummary}
           </span>
 
           {/* Sort selection dropdown */}
-          <div className="relative flex items-center gap-1">
-            <span className="text-[12px] text-tt-muted font-medium select-none">Sort:</span>
+          <div className="relative flex items-center gap-1.5 bg-tt-page border border-tt-border rounded-full px-3 py-1 shadow-sm hover:border-tt-blue transition-all duration-300">
+            <span className="text-[12px] text-tt-muted font-bold select-none">Sort:</span>
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as any)}
-              className="appearance-none bg-transparent font-semibold text-[12px] text-tt-navy pr-6 pl-1.5 py-1 border-0 focus:ring-0 focus:outline-none cursor-pointer"
+              className="appearance-none bg-transparent font-bold text-[12px] text-tt-navy pr-5 pl-0.5 py-0 border-0 focus:ring-0 focus:outline-none cursor-pointer"
             >
               <option value="relevance">Relevance</option>
               <option value="price">Price</option>
               <option value="rating">Rating</option>
             </select>
-            <ChevronDown size={12} className="text-tt-navy absolute right-0 pointer-events-none stroke-[2.5]" />
+            <ChevronDown size={12} className="text-tt-navy absolute right-2.5 pointer-events-none stroke-[2.5]" />
           </div>
         </div>
       </div>
 
       {/* Main Results List */}
-      <div className="max-w-[560px] mx-auto px-4 mt-8 flex flex-col gap-6">
+      <div className="max-w-[560px] mx-auto px-4 mt-10 flex flex-col gap-6">
         
         {/* Section title */}
-        <h2 className="text-[28px] font-bold font-serif text-tt-navy mb-1 select-none">
+        <h2 className="text-[28px] font-bold font-serif text-tt-navy select-none mb-1 text-center sm:text-left">
           Recommended Pros
         </h2>
 
@@ -85,43 +84,47 @@ export const Results: React.FC = () => {
           <Card
             variant="featured"
             hoverable={true}
-            className="border-2 border-tt-blue shadow-[0_4px_16px_rgba(0,0,0,0.08)] bg-white p-6 rounded-2xl flex flex-col gap-4"
+            className="p-6 rounded-2xl flex flex-col gap-5 bg-white"
           >
             {/* Best Match Header badge row */}
             <div className="flex items-center justify-between">
-              <Badge variant="blue" className="text-[12px] font-semibold px-3 py-0.5">
+              <Badge variant="blue" className="text-[12px] font-bold px-3 py-1 shadow-sm">
                 Best match
               </Badge>
+              
               <button 
                 onClick={() => handleSelectPro(bestMatch.id)}
-                className="text-[12px] font-semibold text-tt-blue hover:text-tt-deep hover:underline cursor-pointer"
+                className="text-[12px] font-bold text-tt-blue hover:text-tt-deep hover:underline cursor-pointer transition-colors flex items-center gap-1"
               >
+                <Sparkles size={12} className="text-tt-blue animate-pulse" />
                 Why Tack picked this
               </button>
             </div>
 
             {/* Pro details row */}
             <div className="flex gap-4">
-              <Avatar initials={bestMatch.initials} size="md" className="shrink-0" />
+              <Avatar initials={bestMatch.initials} imageSrc={bestMatch.imageSrc} size="md" className="shrink-0 shadow-sm" />
               <div className="flex-grow min-w-0">
                 <div className="flex items-center gap-1.5">
-                  <h3 className="text-[15px] font-semibold text-tt-navy truncate">
+                  <h3 className="text-[15px] font-bold text-tt-navy truncate">
                     {bestMatch.name}
                   </h3>
                   {bestMatch.verified && (
                     <BadgeCheck size={16} className="text-tt-blue fill-tt-blue-tint shrink-0" />
                   )}
-                  <span className="text-[12px] text-tt-blue font-semibold shrink-0">
-                    Thumbtack verified
+                  <span className="text-[12px] text-tt-blue font-bold tracking-wide uppercase shrink-0">
+                    Verified pro
                   </span>
                 </div>
-                <p className="text-[12px] text-tt-muted truncate">
+                
+                <p className="text-[12px] text-tt-muted font-semibold mt-0.5">
                   {bestMatch.service}
                 </p>
+                
                 {/* Ratings */}
                 <div className="flex items-center gap-1 mt-1 text-[12px]">
                   <Star size={12} className="text-tt-star fill-tt-star stroke-none" />
-                  <span className="font-semibold text-tt-navy">{bestMatch.rating}</span>
+                  <span className="font-bold text-tt-navy">{bestMatch.rating}</span>
                   <span className="text-tt-muted">({bestMatch.reviewCount} reviews)</span>
                 </div>
               </div>
@@ -129,32 +132,34 @@ export const Results: React.FC = () => {
 
             {/* Pro Bio */}
             {bestMatch.bio && (
-              <p className="text-[12px] text-tt-muted leading-relaxed">
+              <p className="text-[12px] text-tt-muted leading-relaxed font-medium">
                 {bestMatch.bio}
               </p>
             )}
 
             {/* Highlights details chips row */}
-            <div className="flex flex-wrap gap-2">
-              <div className="flex items-center gap-1 bg-tt-page border border-tt-border rounded-xl px-2.5 py-1 text-[12px] text-tt-navy">
-                <Calendar size={14} className="text-tt-muted" />
+            <div className="flex flex-wrap gap-2 pt-1">
+              <div className="flex items-center gap-1.5 bg-tt-page border border-tt-border rounded-xl px-3 py-1.5 text-[12px] text-tt-navy font-semibold shadow-sm hover:border-tt-blue transition-all duration-300">
+                <Calendar size={13} className="text-tt-muted" />
                 <span>{bestMatch.availability} available</span>
               </div>
-              <div className="flex items-center gap-1 bg-tt-page border border-tt-border rounded-xl px-2.5 py-1 text-[12px] text-tt-navy">
-                <MapPin size={14} className="text-tt-muted" />
+              
+              <div className="flex items-center gap-1.5 bg-tt-page border border-tt-border rounded-xl px-3 py-1.5 text-[12px] text-tt-navy font-semibold shadow-sm hover:border-tt-blue transition-all duration-300">
+                <MapPin size={13} className="text-tt-muted" />
                 <span>{bestMatch.distanceMiles} miles away</span>
               </div>
-              <div className="flex items-center gap-1 bg-tt-page border border-tt-border rounded-xl px-2.5 py-1 text-[12px] text-tt-navy">
-                <DollarSign size={14} className="text-tt-muted" />
+              
+              <div className="flex items-center gap-1.5 bg-tt-page border border-tt-border rounded-xl px-3 py-1.5 text-[12px] text-tt-navy font-semibold shadow-sm hover:border-tt-blue transition-all duration-300">
+                <DollarSign size={13} className="text-tt-muted" />
                 <span>${bestMatch.price} {bestMatch.priceUnit} rate</span>
               </div>
             </div>
 
             {/* Honey yellow AI reasoning block */}
             {bestMatch.matchReason && (
-              <div className="bg-[#FFFBEB] border border-[#FDE68A] rounded-xl p-3 flex gap-2">
-                <Sparkles size={16} className="text-[#F59E0B] shrink-0 mt-0.5" />
-                <p className="text-[12px] text-[#92400E] leading-normal font-medium">
+              <div className="bg-[#FFFBEB] border border-[#FDE68A] rounded-xl p-3.5 flex gap-2.5 shadow-[inset_0_1px_2px_rgba(253,230,138,0.2)]">
+                <Sparkles size={16} className="text-[#F59E0B] shrink-0 mt-0.5 animate-pulse" />
+                <p className="text-[12px] text-[#92400E] leading-relaxed font-bold">
                   {bestMatch.matchReason}
                 </p>
               </div>
@@ -164,7 +169,7 @@ export const Results: React.FC = () => {
             <Button
               variant="primary"
               size="lg"
-              className="w-full mt-2"
+              className="w-full mt-1 active-press shadow-md"
               onClick={() => handleSelectPro(bestMatch.id)}
             >
               Book via Tack →
@@ -175,7 +180,7 @@ export const Results: React.FC = () => {
         {/* OTHER RESULTS */}
         {otherMatches.length > 0 && (
           <div className="flex flex-col gap-4">
-            <span className="text-[12px] font-bold tracking-wider text-tt-muted uppercase select-none mt-2">
+            <span className="text-[11px] font-bold tracking-widest text-tt-muted uppercase select-none mt-4">
               Other options
             </span>
 
@@ -184,56 +189,55 @@ export const Results: React.FC = () => {
                 key={pro.id}
                 variant="default"
                 hoverable={true}
-                className="bg-white border border-tt-border p-4.5 rounded-2xl flex flex-col gap-3"
+                className="bg-white border border-tt-border p-5 rounded-2xl flex flex-col gap-4"
               >
                 {/* Pro main line */}
                 <div className="flex gap-4">
-                  <Avatar initials={pro.initials} size="sm" className="shrink-0" />
+                  <Avatar initials={pro.initials} imageSrc={pro.imageSrc} size="sm" className="shrink-0 shadow-sm" />
                   <div className="flex-grow min-w-0">
                     <div className="flex items-center gap-1.5">
-                      <h4 className="text-[15px] font-semibold text-tt-navy truncate">
+                      <h4 className="text-[15px] font-bold text-tt-navy truncate">
                         {pro.name}
                       </h4>
                       {pro.verified && (
                         <BadgeCheck size={16} className="text-tt-blue fill-tt-blue-tint shrink-0" />
                       )}
                     </div>
-                    <p className="text-[12px] text-tt-muted truncate">
+                    
+                    <p className="text-[12px] text-tt-muted font-semibold">
                       {pro.service}
                     </p>
+                    
                     <div className="flex items-center gap-1 mt-0.5 text-[12px]">
                       <Star size={12} className="text-tt-star fill-tt-star stroke-none" />
-                      <span className="font-semibold text-tt-navy">{pro.rating}</span>
+                      <span className="font-bold text-tt-navy">{pro.rating}</span>
                       <span className="text-tt-muted">({pro.reviewCount} reviews)</span>
                     </div>
                   </div>
                   
                   {/* Pricing / Booking right-side column */}
                   <div className="text-right shrink-0">
-                    <div className="text-[15px] font-bold text-tt-navy">
+                    <div className="text-[15px] font-extrabold text-tt-navy">
                       ${pro.price}
                     </div>
-                    <div className="text-[12px] text-tt-muted">
+                    <div className="text-[12px] text-tt-muted font-semibold">
                       {pro.priceUnit} rate
                     </div>
                   </div>
                 </div>
 
                 {/* Details layout row */}
-                <div className="flex flex-wrap items-center justify-between gap-2 border-t border-tt-page pt-3">
-                  <div className="flex gap-2.5">
-                    <span className="text-[12px] text-tt-muted">
-                      {pro.availability}
-                    </span>
-                    <span className="text-[12px] text-tt-border">|</span>
-                    <span className="text-[12px] text-tt-muted">
-                      {pro.distanceMiles} miles away
-                    </span>
+                <div className="flex items-center justify-between gap-2 border-t border-tt-page pt-3.5">
+                  <div className="flex gap-3 text-[12px] text-tt-muted font-semibold">
+                    <span>{pro.availability}</span>
+                    <span className="text-tt-border select-none">|</span>
+                    <span>{pro.distanceMiles} miles away</span>
                   </div>
+                  
                   <Button
                     variant="outline"
                     size="sm"
-                    className="h-8 px-4 text-xs font-semibold"
+                    className="h-8 px-4 text-[12px] font-bold active-press shadow-sm"
                     onClick={() => handleSelectPro(pro.id)}
                   >
                     Select

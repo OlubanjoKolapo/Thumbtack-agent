@@ -25,7 +25,7 @@ export const IntelligenceRow: React.FC<IntelligenceRowProps> = ({
         </div>
         
         {/* Action text */}
-        <span className="text-[14px] text-tt-navy font-medium">
+        <span className="text-[12px] text-tt-navy font-semibold">
           {text}
         </span>
       </div>

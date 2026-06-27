@@ -30,9 +30,9 @@ export const Button: React.FC<ButtonProps> = ({
 
   // Sizes classes
   const sizes = {
-    sm: 'h-[36px] px-4 text-sm',
-    md: 'h-[44px] px-5 text-base',
-    lg: 'h-[48px] px-6 text-base',
+    sm: 'h-[36px] px-4 text-[12px]',
+    md: 'h-[44px] px-5 text-[15px]',
+    lg: 'h-[48px] px-6 text-[15px]',
   };
 
   const variantClass = variants[variant];

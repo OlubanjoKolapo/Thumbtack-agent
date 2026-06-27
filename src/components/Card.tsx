@@ -13,19 +13,23 @@ export const Card: React.FC<CardProps> = ({
   className = '',
   ...props
 }) => {
-  let baseClasses = 'bg-white rounded-2xl p-6 transition-all duration-150 font-sans';
+  let baseClasses = 'bg-white rounded-2xl p-6 transition-all duration-300 cubic-bezier(0.16, 1, 0.3, 1) font-sans';
 
   // Variant configurations
   const variants = {
-    default: 'border border-tt-border shadow-[0_1px_4px_rgba(0,0,0,0.06)]',
-    elevated: 'border border-transparent shadow-[0_4px_12px_rgba(0,0,0,0.05),0_1px_3px_rgba(0,0,0,0.02)]',
+    default: 'border border-tt-border shadow-[0_2px_8px_rgba(28,43,51,0.04)]',
+    elevated: 'border border-transparent shadow-[0_12px_24px_rgba(28,43,51,0.06),0_1px_3px_rgba(28,43,51,0.02)]',
     bordered: 'border border-tt-border shadow-none',
-    featured: 'border-2 border-tt-blue shadow-[0_4px_16px_rgba(0,0,0,0.08)]',
+    featured: 'border-2 border-tt-blue shadow-[0_8px_32px_rgba(0,159,212,0.08)]',
   };
 
   // Hover animations config
   const hoverClasses = hoverable
-    ? 'hover:shadow-[0_4px_16px_rgba(0,0,0,0.08)] hover:border-tt-blue'
+    ? `hover:-translate-y-1 ${
+        variant === 'featured'
+          ? 'hover:shadow-[0_16px_36px_rgba(0,159,212,0.16)] hover:border-tt-deep'
+          : 'hover:shadow-[0_16px_36px_rgba(28,43,51,0.08)] hover:border-tt-blue'
+      }`
     : '';
 
   return (

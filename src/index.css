@@ -16,15 +16,42 @@
   }
 }
 
-/* Custom CSS keyframe classes and helper animations */
+@layer utilities {
+  /* Modern dot grid pattern */
+  .bg-dot-pattern {
+    background-image: radial-gradient(#E2E8F0 1px, transparent 1px);
+    background-size: 16px 16px;
+  }
+  
+  /* Dark mode dot grid pattern */
+  .bg-dot-pattern-dark {
+    background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1.5px, transparent 1.5px);
+    background-size: 20px 20px;
+  }
+
+  /* Shimmer background loading effect */
+  .animate-shimmer {
+    background: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.2) 20%,
+      rgba(255, 255, 255, 0.5) 60%,
+      rgba(255, 255, 255, 0) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+}
+
+/* Animations */
 .animate-page-in {
-  animation: pageIn 200ms ease-out forwards;
+  animation: pageIn 350ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 @keyframes pageIn {
   from {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(12px);
   }
   to {
     opacity: 1;
@@ -32,7 +59,13 @@
   }
 }
 
-/* Scrollbar styling for textarea and general elements */
+@keyframes shimmer {
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Scrollbar styling */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -49,4 +82,9 @@
 
 ::-webkit-scrollbar-thumb:hover {
   background: #CBD5E1;
+}
+
+/* Smooth active state clicks */
+.active-press:active {
+  transform: scale(0.98);
 }

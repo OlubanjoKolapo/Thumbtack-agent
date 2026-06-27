@@ -25,9 +25,7 @@ export const Searching: React.FC = () => {
       return setTimeout(() => {
         setStatuses((prev) => {
           const next = [...prev];
-          // Mark current item as done
           next[index] = 'done';
-          // Mark next item as loading (if there is one)
           if (index + 1 < next.length) {
             next[index + 1] = 'loading';
           }
@@ -36,7 +34,6 @@ export const Searching: React.FC = () => {
       }, time);
     });
 
-    // Auto-navigate to /results after all rows finish loading
     const completionTimer = setTimeout(() => {
       navigate('/results');
     }, 3500);
@@ -47,10 +44,18 @@ export const Searching: React.FC = () => {
     };
   }, [navigate]);
 
+  // Calculate matching percentages for progress bar
+  const doneCount = statuses.filter(s => s === 'done').length;
+  const progressPercent = (doneCount / statuses.length) * 100;
+
   return (
-    <div className="fixed inset-0 z-50 bg-tt-dark flex flex-col justify-between items-center py-10 px-4 text-white">
+    <div className="fixed inset-0 z-50 bg-tt-dark flex flex-col justify-between items-center py-12 px-4 text-white overflow-hidden">
+      {/* Background ambient radial glows */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-tt-blue/10 rounded-full blur-[140px] pointer-events-none z-0" />
+      <div className="absolute inset-0 bg-dot-pattern-dark opacity-10 pointer-events-none z-0" />
+
       {/* TOP LEFT: Tack Wordmark */}
-      <div className="w-full max-w-[1200px] flex justify-start items-center">
+      <div className="w-full max-w-[1200px] flex justify-start items-center relative z-10">
         <div className="flex items-baseline gap-2">
           <span className="font-serif text-[24px] font-bold text-white tracking-tight">Tack</span>
           <span className="text-[11px] text-white/50 font-sans tracking-wide">by Thumbtack</span>
@@ -58,11 +63,14 @@ export const Searching: React.FC = () => {
       </div>
 
       {/* CENTER WORKSPACE */}
-      <div className="flex flex-col items-center gap-6 w-full max-w-[420px] my-auto">
+      <div className="flex flex-col items-center gap-8 w-full max-w-[420px] my-auto relative z-10">
         
-        {/* Pulsing Pin logo mark */}
-        <div className="flex items-center justify-center h-20 w-20 rounded-full border-2 border-white/20 bg-white/5 animate-pulse-subtle">
-          <span className="font-serif text-[40px] font-bold text-white select-none leading-none pt-0.5">T</span>
+        {/* Pulsing radar scanning logo */}
+        <div className="relative flex items-center justify-center">
+          <div className="absolute w-24 h-24 rounded-full border border-tt-blue/30 animate-ping [animation-duration:2.5s]" />
+          <div className="relative z-10 flex items-center justify-center h-20 w-20 rounded-full border-2 border-white/20 bg-white/5 animate-pulse-subtle shadow-[0_0_30px_rgba(0,159,212,0.15)]">
+            <span className="font-serif text-[40px] font-bold text-white select-none leading-none pt-0.5">T</span>
+          </div>
         </div>
 
         {/* Title status */}
@@ -70,13 +78,21 @@ export const Searching: React.FC = () => {
           <span className="text-[12px] font-bold tracking-widest text-tt-blue block mb-1">
             GATHERING INTELLIGENCE
           </span>
-          <p className="text-[14px] text-white/60 font-sans">
+          <p className="text-[15px] text-white/60 font-sans">
             AI agent matching with active local pros...
           </p>
         </div>
 
         {/* Progress Card container */}
-        <div className="w-full bg-white rounded-[20px] overflow-hidden shadow-[0_12px_40px_rgba(0,0,0,0.3)]">
+        <div className="w-full bg-white rounded-[20px] overflow-hidden shadow-[0_16px_48px_rgba(0,0,0,0.4)] border border-white/5">
+          {/* Custom micro-progress bar */}
+          <div className="w-full h-1 bg-slate-100 relative">
+            <div 
+              className="h-full bg-tt-blue transition-all duration-500 ease-out" 
+              style={{ width: `${progressPercent}%` }}
+            />
+          </div>
+
           {/* Row 1 */}
           <IntelligenceRow
             icon={ThumbtackIcon}
@@ -121,7 +137,7 @@ export const Searching: React.FC = () => {
       </div>
 
       {/* BOTTOM VERSION ROW */}
-      <div className="text-[12px] text-white/40 font-sans font-medium tracking-wide">
+      <div className="text-[12px] text-white/30 font-sans font-semibold tracking-wide relative z-10">
         Tack v1.0 &middot; Powered by Thumbtack
       </div>
 

@@ -1,3 +1,7 @@
+// Import profile photos
+import person1 from '../assets/person 1.webp';
+import person2 from '../assets/person 2.jpg';
+
 export interface Provider {
   id: string;
   name: string;
@@ -14,6 +18,7 @@ export interface Provider {
   tags: string[];
   matchScore: number;
   matchReason?: string;
+  imageSrc?: string;
 }
 
 export const mockProviders: Provider[] = [
@@ -32,7 +37,8 @@ export const mockProviders: Provider[] = [
     verified: true,
     tags: ["Drain repair", "Emergency", "Licensed"],
     matchScore: 98,
-    matchReason: "Best availability match for Saturday, within your $150 budget, and 47 five-star reviews for similar repairs."
+    matchReason: "Best availability match for Saturday, within your $150 budget, and 47 five-star reviews for similar repairs.",
+    imageSrc: person1
   },
   {
     id: "pro-002",
@@ -49,7 +55,8 @@ export const mockProviders: Provider[] = [
     verified: true,
     tags: ["Pipe repair", "Water heater"],
     matchScore: 82,
-    matchReason: "Good availability match, close distance, but slightly higher pricing."
+    matchReason: "Good availability match, close distance, but slightly higher pricing.",
+    imageSrc: person2
   },
   {
     id: "pro-003",
