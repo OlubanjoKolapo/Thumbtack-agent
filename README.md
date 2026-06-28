@@ -1,65 +1,56 @@
-# Tack — An Agent Booking Layer for Thumbtack
+# Tack — A Conversational Booking Layer for Thumbtack
 ### A design engineering concept by Antigravity
 
-Tack is a conceptual AI-agent booking layer built directly on top of Thumbtack's existing pro marketplace. It connects natural language inputs from AI systems (like Anthropic's Claude, OpenAI's ChatGPT, or custom Model Context Protocol agents) with Thumbtack's verified database of 300K+ home service professionals. 
+Tack is a conceptual AI conversational transaction layer built directly on top of Thumbtack's existing pro marketplace. It bridges the gap between natural language requests from users and Thumbtack's verified database of 300K+ home service professionals. 
 
-No back-and-forth messages. No ghosting. Just booked.
-
----
-
-## 1. The Problem: Thumbtack's Drop-Off Gap
-
-While Thumbtack excels at matching customers with qualified local professionals, it suffers from a high transaction drop-off rate between matching and actual booking. Traditional marketplaces require customers to:
-* Review multiple pro profiles and read extensive reviews.
-* Individually message 3–5 pros to check availability.
-* Participate in manual back-and-forth negotiations regarding task details, pricing, and scheduling.
-* Suffer delays, unresponsive pros, or drop off entirely due to transaction fatigue.
-
-This represents a multi-billion dollar gap in completed services.
+No filters. No forms. No back and forth. Just booked.
 
 ---
 
-## 2. The Solution: Tack as the Agent Layer
+## 1. The Problem: Thumbtack's Filter and Communication Drop-Off
 
-Tack bridges this gap by acting as an asynchronous transaction agent. Instead of browsing a marketplace, the customer describes their request once in natural language to their preferred AI assistant. 
-
-Tack acts as the secure booking layer:
-1. **Intelligent Query Mapping**: Translates raw conversational requests (e.g. *"shower has been leaking, need someone this Saturday morning before noon"*) into parameterized search queries.
-2. **Deterministic Search**: Queries Thumbtack's API for pros matching location, price range, and calendar availability.
-3. **AI Recommendation**: Filters and ranks matches, highlighting the single best pro with transparent pricing and live timeslots.
-4. **Instant Action**: Authorizes the agent to book, pay, and schedule with one-tap confirmation.
+While Thumbtack excels at matching customers with local pros, traditional marketplace funnels suffer from high drop-off rates between matching and booking. Customers are forced to navigate complex filter forms, read through dozens of independent profiles, manually contact 3–5 pros, and coordinate schedules through slow back-and-forth messages. This transaction fatigue represents a major friction point.
 
 ---
 
-## 3. The Paystack Index Parallel (Why Now?)
+## 2. The UX Insight: Chat as a Filter Replacement
 
-In the early days of online payments, companies spent weeks integrating bank APIs. Stripe and Paystack succeeded by building a clean developer abstraction layer. 
-
-We are seeing a similar shift from **browser-based user interfaces** to **AI-agent workflows**. However, agents cannot browse visual websites to coordinate tasks; they need structured APIs, licensing verifications, and deterministic booking logic. Tack serves as the transaction layer for the agentic era, enabling LLMs to securely perform real-world actions in the physical service marketplace.
+Instead of browsing directories, customers describe what they need in plain language. Tack serves as a secure conversational booking assistant that parses raw text (e.g. *"my shower has been leaking, need a plumber this Saturday morning under $150"*), checks availability, resolves locations, ranks candidates, answers questions, and coordinates scheduling inside a single conversational flow.
 
 ---
 
-## 4. What's Built: Route Map & Screens
+## 3. What's Built: Route Map & Screens
 
-This prototype showcases the end-to-end customer journey across 8 dedicated routes:
-
-* **`/` — Landing Page**: Contains the replication of the dark Thumbtack search hero paired with the Tack agent introduction, supporting logos, and visual horizontal steps.
-* **`/connect` — Connect Agent**: Onboarding screen to link Claude, ChatGPT, or Custom MCP agents, set optional spend limits, and select approval preferences.
-* **`/request` — Describe Request**: Natural language textarea, interactive voice recording simulator with pulse animation, and quick suggestion chips.
-* **`/searching` — Gathering Intelligence**: Fullscreen dark transition animation visualizing Thumbtack database search, license verification, star review analysis, calendar checks, and relevance scoring.
-* **`/results` — Pro Results**: Clean split ranking view showcasing the "Best match" with a warm-yellow AI reasoning card and secondary pros.
-* **`/approve` — Booking Approval**: Detailed line item list, pricing breakdown, transaction totals, and payment confirmation.
-* **`/confirmed` — Booking Confirmed**: Celebration state showing generated booking IDs, confirmation summary, and receipts.
-* **`/track` — Job Tracker**: Interactive progress timeline illustrating active steps ("En route") with live pulsing rings, ETAs, and support anchors.
+* **`/` — Landing Page**:
+  Replicates Thumbtack's dark hero design with an integrated search input that instantly initiates the `/chat` route. It features a Tack introduction band, visual horizontal steps cards, and Thumbtack's network trust markers.
+* **`/chat` — Conversational Feed**:
+  The entire booking journey occurs on this single screen. It manages conversational feed cards, prompt chips, current location requests, and inline zip code overrides.
+  * **Gathering Intelligence**: Shows a dark database searching layout with staggering check animations (database search, credentials verify, rating checks, calendar slots, best matches).
+  * **Nested Pro Recommendations**: Ranks matching candidate pros. Tapping any card slides open extensive biographies, hire stats, proximity, response times, star reviews, and action controls.
+  * **Interactive Question Answering**: Filters and re-ranks pros when the user asks questions (e.g., *"Why is James better than Mike?"*, *"Anyone available Sunday?"*, or *"Under $80 only?"*).
+  * **Slide-Up Booking Modal**: Tapping "Book now" opens a bottom sheet review overlay outlining dates, times, pricing totals, and payment details.
+* **`/track` — Job Tracker**:
+  Follows a confirmed booking. Illustrates live progress timelines (done steps, active step en route with pulsing rings, and pending steps) along with maps ETA strips.
 
 ---
 
-## 5. The Brand Decision: Native System Extension
+## 4. The Design Decision: Conversational Feed vs. Chat Bubbles
 
-Rather than creating a brand-new style system, Tack uses Thumbtack's existing design tokens:
-* **Serif Headings**: Georgia/serif for all display h1/h2 headings (e.g. *"For everything home could be."*) to retain Thumbtack's premium editorial tone.
-* **Curated Colors**: `#1C2B33` (Hero dark), `#009FD4` (CTA brand blue), and `#F5F7FA` (strictly used for the page background so card components float natively).
-* **The AI Reasoning Panel**: A soft `#FFFBEB` yellow signature used exclusively on `/results` and `/approve` to denote moments of AI synthesis.
+Standard chat layouts rely on messenger-style bubbles offset to the left and right. This makes structured content like pro profiles, estimates, and reviews feel like awkward embedded attachments. 
+
+Tack introduces a **Conversational Feed** layout:
+* **Editorial Breathing Room**: Full-width cards stacked vertically.
+* **Natural Slotting**: Pro recommendation cards fit natively at the exact same width as conversation prompts.
+* **Reduced Noise**: User inputs are right-aligned blue-tint pills, while Tack responses act as structural cards that frame content cleanly.
+
+---
+
+## 5. Brand Decision: Native System Extension
+
+Tack does not invent a new brand system; it thoughtfully extends Thumbtack’s signature design tokens:
+* **Georgia Serif Headings**: Main display titles and headers use bold Georgia font weights for premium editorial tones.
+* **Restrained Accent Palette**: Reserves brand blue (`#009FD4`) specifically for primary CTAs, links, and active controls. All selected cards and overlays use high-contrast dark navy (`#1C2B33`) and neutral slates to reduce visual noise.
+* **Micro-Animations**: Uses scale checkmarks, timeline path transitions, and pulsing voice indicators to build interactive delight.
 
 ---
 
@@ -67,24 +58,21 @@ Rather than creating a brand-new style system, Tack uses Thumbtack's existing de
 
 * **Front End**: React 18 + TypeScript + Vite + Tailwind CSS v3
 * **Routing**: React Router v6
-* **Icons**: Lucide React (configured for brand-accurate, thin, unfilled outlines)
-* **Data Flow**: Powered by a global React Booking Context (`src/context/BookingContext.tsx`) that flows user data between selections, search, and tracking.
-* **Build Configuration**: Verified compilation and clean module syntax verification.
+* **Icons**: Lucide React (brand-accurate thin outline shapes)
+* **Hooks**: Custom state machine `useChat` (`src/hooks/useChat.ts`) handling typing delays, search rows, location confirms, re-ranking filters, and modal transitions.
 
 ---
 
 ## 7. What a Real Build Needs from Thumbtack
 
-To scale this design concept into production, the following infrastructure is required:
-1. **Public Pro API**: Access to Thumbtack’s query indexes for real-time ratings, pricing packages, and live calendars.
-2. **Secure Payment Gateways**: Escrowed payment APIs (e.g., Stripe Connect) enabling agents to pre-authorize transactions up to the user's spending limit.
-3. **MCP Server Integration**: Hosting a Thumbtack Model Context Protocol (MCP) server that exposes endpoints like `search_pros`, `check_availability`, and `create_booking` directly to agents.
+To connect this prototype to production, Thumbtack's tech infrastructure needs:
+1. **Public Pro API**: Access to real-time query indexes for ratings, prices, and live calendar availability.
+2. **Secure Payments Gateways**: Payment escrow rails (e.g. Stripe Connect) allowing the agent to pre-authorize payments up to the user's spending limit.
+3. **MCP Server Integration**: Exposing a Model Context Protocol (MCP) server with tool endpoints (e.g., `search_pros`, `check_availability`, `create_booking`) so LLM agents can query and reserve pros programmatically.
 
 ---
 
 ## 8. Running Locally
-
-Follow these steps to run the interactive prototype:
 
 1. **Install dependencies**:
    ```bash
@@ -97,4 +85,4 @@ Follow these steps to run the interactive prototype:
    ```
 
 3. **Open local preview**:
-   Navigate to the local URL (usually `http://localhost:5173`) in your browser to test the full client-side onboarding and booking simulation.
+   Navigate to the local URL (usually `http://localhost:5173`) in your browser to test the conversational interface.

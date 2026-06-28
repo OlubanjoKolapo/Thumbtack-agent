@@ -2,34 +2,29 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   ArrowUp, 
-  ArrowRight, 
   Check, 
   MapPin, 
-  BadgeCheck, 
-  Sparkles, 
-  Shield, 
+  Seal, 
   CreditCard, 
-  Star,
   Wrench,
-  Calendar,
+  CalendarBlank,
   Clock,
-  TrendingUp
-} from 'lucide-react';
+  CheckCircle
+} from '@phosphor-icons/react';
 import { Card } from '../components/Card';
 import { Button } from '../components/Button';
 import { Avatar } from '../components/Avatar';
 import { Badge } from '../components/Badge';
-import { IntelligenceRow } from '../components/IntelligenceRow';
 
 // Import image assets
 import claudeLogo from '../assets/claude logo.png';
 import person1 from '../assets/person 1.webp';
 import person2 from '../assets/person 2.jpg';
-
-// Custom pin symbol matching searching screen
-const ThumbtackIcon: React.FC = () => (
-  <span className="font-serif font-extrabold text-[12px] select-none leading-none">T</span>
-);
+import searchImage from '../assets/search.png';
+import verifiedImage from '../assets/Verified.png';
+import thumbtackImage from '../assets/Thumbtack logo.png';
+import calendarImage from '../assets/calender icon.jfif';
+import rankingImage from '../assets/ranking.png';
 
 type DemoState = 'IDLE' | 'SEARCHING' | 'RESULTS' | 'APPROVAL' | 'CONFIRMED';
 
@@ -41,6 +36,55 @@ interface ChatMessage {
   customNode?: React.ReactNode;
 }
 
+// Staggered Embedded Checklist Component inside Chat Bubble
+const EmbeddedSearchCard: React.FC = () => {
+  const [checkedCount, setCheckedCount] = useState<number>(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCheckedCount(prev => {
+        if (prev >= 5) {
+          clearInterval(timer);
+          return 5;
+        }
+        return prev + 1;
+      });
+    }, 80); // Stagger interval (fast, simulating agent intelligence)
+    return () => clearInterval(timer);
+  }, []);
+
+  return (
+    <div className="bg-[#F5F7FA] border border-[#E2E8F0] rounded-[10px] p-2.5 mt-2 shadow-inner font-sans text-left">
+      <div className="flex items-center gap-1 mb-1.5 select-none">
+        <span className="font-serif font-extrabold text-[10px] text-tt-blue">T</span>
+        <span className="text-[10px] font-bold text-tt-blue tracking-wider uppercase">TACK SEARCHING</span>
+      </div>
+      <div className="flex flex-col gap-1 text-[12px] text-tt-navy font-semibold">
+        <div className="flex items-center justify-between">
+          <span className={checkedCount >= 1 ? "text-tt-navy" : "text-tt-muted"}>✓ Thumbtack database</span>
+          {checkedCount >= 1 ? <span className="text-[#22C55E]">✓</span> : <span className="text-tt-blue animate-pulse">...</span>}
+        </div>
+        <div className="flex items-center justify-between">
+          <span className={checkedCount >= 2 ? "text-tt-navy" : "text-tt-muted"}>✓ Verifying credentials</span>
+          {checkedCount >= 2 ? <span className="text-[#22C55E]">✓</span> : checkedCount === 1 ? <span className="text-tt-blue animate-pulse">...</span> : <span className="text-tt-border">o</span>}
+        </div>
+        <div className="flex items-center justify-between">
+          <span className={checkedCount >= 3 ? "text-tt-navy" : "text-tt-muted"}>✓ Checking availability</span>
+          {checkedCount >= 3 ? <span className="text-[#22C55E]">✓</span> : checkedCount === 2 ? <span className="text-tt-blue animate-pulse">...</span> : <span className="text-tt-border">o</span>}
+        </div>
+        <div className="flex items-center justify-between">
+          <span className={checkedCount >= 4 ? "text-tt-navy" : "text-tt-muted"}>✓ Reading reviews</span>
+          {checkedCount >= 4 ? <span className="text-[#22C55E]">✓</span> : checkedCount === 3 ? <span className="text-tt-blue animate-pulse">...</span> : <span className="text-tt-border">o</span>}
+        </div>
+        <div className="flex items-center justify-between">
+          <span className={checkedCount >= 5 ? "text-tt-navy" : "text-tt-muted"}>✓ Ranking matches</span>
+          {checkedCount >= 5 ? <span className="text-[#22C55E]">✓</span> : checkedCount === 4 ? <span className="text-tt-blue animate-pulse">...</span> : <span className="text-tt-border">o</span>}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export const Demo: React.FC = () => {
   const navigate = useNavigate();
   
@@ -50,424 +94,191 @@ export const Demo: React.FC = () => {
   const [isTyping, setIsTyping] = useState<boolean>(false);
   const [isAutoplay, setIsAutoplay] = useState<boolean>(true);
   const [pulseSync, setPulseSync] = useState<boolean>(false);
-  
-  // Searching step completion indicators
+
+  // Stagger checklist for Search State
   const [searchCheckpoints, setSearchCheckpoints] = useState<('pending' | 'loading' | 'done')[]>([
-    'pending', 'pending', 'pending', 'pending', 'pending'
+    'pending',
+    'pending',
+    'pending',
+    'pending',
+    'pending',
   ]);
 
-  // Timers mapping reference for teardowns
-  const autoplayTimersRef = useRef<any[]>([]);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
-  // Trigger blue sync line flash
+  // Trigger sync light animations
   const triggerSyncFlash = () => {
     setPulseSync(true);
-    setTimeout(() => setPulseSync(false), 300);
+    setTimeout(() => setPulseSync(false), 800);
   };
 
-  // Scroll to bottom helper
-  const scrollToBottom = () => {
-    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
+  // Autoplay script orchestration
   useEffect(() => {
-    scrollToBottom();
-  }, [chatMessages, isTyping]);
+    if (!isAutoplay) return;
 
-  // Sync state changes with the line flash
-  useEffect(() => {
-    triggerSyncFlash();
-  }, [currentState]);
-
-  // Reset demo state helpers
-  const handleReset = () => {
-    // Clear any active timers
-    autoplayTimersRef.current.forEach(clearTimeout);
-    autoplayTimersRef.current = [];
-    
-    setCurrentState('IDLE');
-    setChatMessages([]);
-    setIsTyping(false);
-    setSearchCheckpoints(['pending', 'pending', 'pending', 'pending', 'pending']);
-  };
-
-  const handleSkipToApproval = () => {
-    autoplayTimersRef.current.forEach(clearTimeout);
-    autoplayTimersRef.current = [];
-    
-    // Jump straight to approval text context
-    const currentMessages: ChatMessage[] = [
-      {
-        id: 'msg-1',
-        sender: 'user',
-        text: 'My shower has been leaking for a week. Need a plumber this Saturday morning, budget around $150.',
-        timestamp: '9:00 AM'
-      },
-      {
-        id: 'msg-2',
-        sender: 'agent',
-        text: 'On it. Searching Thumbtack\'s pro database for licensed plumbers available Saturday morning near you...',
-        timestamp: '9:00 AM',
-        customNode: (
-          <div className="bg-tt-page border border-tt-border rounded-xl p-3 mt-2 shadow-inner">
-            <div className="flex items-center gap-1.5 mb-2">
-              <span className="font-serif font-extrabold text-[10px] text-tt-blue">T</span>
-              <span className="text-[10px] font-bold text-tt-blue tracking-wider uppercase">TACK SEARCHING</span>
-            </div>
-            <div className="flex flex-col gap-1">
-              <div className="flex items-center justify-between text-[11px] text-tt-navy font-semibold">
-                <span>Thumbtack database</span>
-                <span className="text-emerald-500 font-bold">✓</span>
-              </div>
-              <div className="flex items-center justify-between text-[11px] text-tt-navy font-semibold">
-                <span>Verifying credentials</span>
-                <span className="text-emerald-500 font-bold">✓</span>
-              </div>
-              <div className="flex items-center justify-between text-[11px] text-tt-navy font-semibold">
-                <span>Checking availability</span>
-                <span className="text-emerald-500 font-bold">✓</span>
-              </div>
-              <div className="flex items-center justify-between text-[11px] text-tt-navy font-semibold">
-                <span>Reading reviews</span>
-                <span className="text-emerald-500 font-bold">✓</span>
-              </div>
-              <div className="flex items-center justify-between text-[11px] text-tt-navy font-semibold">
-                <span>Ranking matches</span>
-                <span className="text-emerald-500 font-bold">✓</span>
-              </div>
-            </div>
-          </div>
-        )
-      },
-      {
-        id: 'msg-3',
-        sender: 'agent',
-        text: 'Found 3 plumbers available Saturday morning within your budget. Here\'s the best match:',
-        timestamp: '9:01 AM',
-        customNode: (
-          <div className="bg-white border border-tt-blue rounded-xl p-3 mt-2 shadow-sm flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Avatar initials="JP" imageSrc={person1} size="sm" className="w-8 h-8 text-[11px]" />
-              <div>
-                <div className="text-[12px] font-bold text-tt-navy">James P.</div>
-                <div className="text-[11px] text-tt-muted font-medium">Sat 9–11 AM &middot; $120 flat &middot; 2.4 mi</div>
-              </div>
-            </div>
-            <button className="bg-tt-dark text-white text-[11px] font-bold h-7 px-3 rounded-full hover:bg-tt-blue transition-colors">
-              Book this
-            </button>
-          </div>
-        )
-      },
-      {
-        id: 'msg-4',
-        sender: 'user',
-        text: 'Book James.',
-        timestamp: '9:01 AM'
-      },
-      {
-        id: 'msg-5',
-        sender: 'agent',
-        text: 'Perfect. Here\'s the booking summary — tap Approve and it\'s done.',
-        timestamp: '9:02 AM',
-        customNode: (
-          <div className="text-[11px] text-tt-muted font-bold mt-2 flex items-center gap-1.5 hover:text-tt-blue cursor-pointer select-none">
-            <span>Tack is handling the booking</span>
-            <ArrowRight size={12} className="stroke-[2.5]" />
-          </div>
-        )
-      }
-    ];
-
-    setChatMessages(currentMessages);
-    setIsTyping(false);
-    setSearchCheckpoints(['done', 'done', 'done', 'done', 'done']);
-    setCurrentState('APPROVAL');
-  };
-
-  // Run autoplay loop
-  const runAutoplay = () => {
-    handleReset();
-
-    const addTimer = (fn: () => void, delay: number) => {
-      const timer = setTimeout(fn, delay);
-      autoplayTimersRef.current.push(timer);
-    };
-
-    // 0s — User message appears
-    addTimer(() => {
+    // Turn 1: User sends message (1.5s delay)
+    const t1 = setTimeout(() => {
+      triggerSyncFlash();
       setChatMessages([
         {
           id: '1',
           sender: 'user',
-          text: 'My shower has been leaking for a week. Need a plumber this Saturday morning, budget around $150.',
+          text: 'Need a certified plumber Saturday morning to fix a leaking shower head. Budget is under $150.',
           timestamp: '12:00 PM'
         }
       ]);
-      setIsTyping(true);
-    }, 100);
+    }, 1500);
 
-    // 1.5s — Claude responds + search starts on right panel
-    addTimer(() => {
+    // Turn 2: Claude replies + starts Tack Search (4.5s delay)
+    const t2 = setTimeout(() => {
+      setIsTyping(true);
+    }, 3200);
+
+    const t3 = setTimeout(() => {
       setIsTyping(false);
+      triggerSyncFlash();
       setChatMessages(prev => [
         ...prev,
         {
           id: '2',
           sender: 'agent',
-          text: 'On it. Searching Thumbtack\'s pro database for licensed plumbers available Saturday morning near you...',
-          timestamp: '12:00 PM',
-          customNode: (
-            <div className="bg-tt-page border border-tt-border rounded-xl p-3 mt-2 shadow-inner">
-              <div className="flex items-center gap-1.5 mb-2">
-                <span className="font-serif font-extrabold text-[10px] text-tt-blue">T</span>
-                <span className="text-[10px] font-bold text-tt-blue tracking-wider uppercase">TACK SEARCHING</span>
-              </div>
-              <div className="flex flex-col gap-1.5">
-                <div className="flex items-center justify-between text-[11px] text-tt-navy font-semibold">
-                  <span>Thumbtack database</span>
-                  <span className="text-tt-blue animate-pulse">searching...</span>
-                </div>
-              </div>
-            </div>
-          )
+          text: "I'll coordinate that. Running Tack searching loops to filter local plumbers in San Francisco...",
+          timestamp: '12:01 PM',
+          customNode: <EmbeddedSearchCard />
         }
       ]);
-      
       setCurrentState('SEARCHING');
-      setSearchCheckpoints(['loading', 'pending', 'pending', 'pending', 'pending']);
-    }, 1500);
-
-    // Stagger searching checkpoints in chat embedded card
-    // Checkpoint 1 done, 2 loading (2.0s)
-    addTimer(() => {
-      setSearchCheckpoints(['done', 'loading', 'pending', 'pending', 'pending']);
-      updateEmbeddedSearchingCard(1);
-    }, 2000);
-
-    // Checkpoint 2 done, 3 loading (2.5s)
-    addTimer(() => {
-      setSearchCheckpoints(['done', 'done', 'loading', 'pending', 'pending']);
-      updateEmbeddedSearchingCard(2);
-    }, 2500);
-
-    // Checkpoint 3 done, 4 loading (3.0s)
-    addTimer(() => {
-      setSearchCheckpoints(['done', 'done', 'done', 'loading', 'pending']);
-      updateEmbeddedSearchingCard(3);
-    }, 3000);
-
-    // Checkpoint 4 done, 5 loading (3.5s)
-    addTimer(() => {
-      setSearchCheckpoints(['done', 'done', 'done', 'done', 'loading']);
-      updateEmbeddedSearchingCard(4);
-    }, 3500);
-
-    // 4.0s — Intelligence rows complete
-    addTimer(() => {
-      setSearchCheckpoints(['done', 'done', 'done', 'done', 'done']);
-      updateEmbeddedSearchingCard(5);
-    }, 4000);
-
-    // 4.5s — Right panel switches to Results state
-    addTimer(() => {
-      setCurrentState('RESULTS');
-      setIsTyping(true);
     }, 4500);
 
-    // 5.0s — Claude shows options in chat thread
-    addTimer(() => {
+    // Searching staggered states checklist (5s to 9s)
+    const step1 = setTimeout(() => {
+      setSearchCheckpoints(['loading', 'pending', 'pending', 'pending', 'pending']);
+    }, 5500);
+    const step2 = setTimeout(() => {
+      setSearchCheckpoints(['done', 'loading', 'pending', 'pending', 'pending']);
+    }, 6500);
+    const step3 = setTimeout(() => {
+      setSearchCheckpoints(['done', 'done', 'loading', 'pending', 'pending']);
+    }, 7500);
+    const step4 = setTimeout(() => {
+      setSearchCheckpoints(['done', 'done', 'done', 'loading', 'pending']);
+    }, 8500);
+    const step5 = setTimeout(() => {
+      setSearchCheckpoints(['done', 'done', 'done', 'done', 'loading']);
+    }, 9500);
+
+    // Turn 3: Results display (10.5s delay)
+    const t4 = setTimeout(() => {
+      setSearchCheckpoints(['done', 'done', 'done', 'done', 'done']);
+    }, 10500);
+
+    const t5 = setTimeout(() => {
+      setIsTyping(true);
+    }, 11200);
+
+    const t6 = setTimeout(() => {
       setIsTyping(false);
+      triggerSyncFlash();
       setChatMessages(prev => [
         ...prev,
         {
           id: '3',
           sender: 'agent',
-          text: 'Found 3 plumbers available Saturday morning within your budget. Here\'s the best match:',
-          timestamp: '12:01 PM',
-          customNode: (
-            <div className="bg-white border border-tt-blue rounded-xl p-3 mt-2 shadow-sm flex items-center justify-between animate-scale-in">
-              <div className="flex items-center gap-2">
-                <Avatar initials="JP" imageSrc={person1} size="sm" className="w-8 h-8 text-[11px]" />
-                <div>
-                  <div className="text-[12px] font-bold text-tt-navy">James P.</div>
-                  <div className="text-[11px] text-tt-muted font-medium">Sat 9–11 AM &middot; $120 flat &middot; 2.4 mi</div>
-                </div>
-              </div>
-              <button 
-                type="button"
-                onClick={handleSkipToApproval}
-                className="bg-tt-dark text-white text-[11px] font-bold h-7 px-3 rounded-full hover:bg-tt-blue transition-colors cursor-pointer"
-              >
-                Book this
-              </button>
-            </div>
-          ),
-        },
-        {
-          id: '3-sub',
-          sender: 'agent',
-          text: 'Want to see all 3 options or shall I book James?',
+          text: "I've matched 3 certified plumbers in SF with Sat AM slots. James P. is your best match at $120 flat, 4.9★ rating. Should I book him?",
           timestamp: '12:01 PM'
         }
       ]);
-    }, 5000);
+      setCurrentState('RESULTS');
+    }, 12500);
 
-    // 7.0s — User sends "Book James" message
-    addTimer(() => {
+    // Turn 4: User says yes (15.5s delay)
+    const t7 = setTimeout(() => {
+      triggerSyncFlash();
       setChatMessages(prev => [
         ...prev,
         {
           id: '4',
           sender: 'user',
-          text: 'Book James.',
-          timestamp: '12:02 PM'
+          text: 'Yes please, go ahead and book James for Saturday.',
+          timestamp: '12:01 PM'
         }
       ]);
-      setIsTyping(true);
-    }, 7000);
+      setCurrentState('APPROVAL');
+    }, 15500);
 
-    // 7.5s — Right panel switches to approval screen
-    addTimer(() => {
+    // Turn 5: Claude approves booking (19s delay)
+    const t8 = setTimeout(() => {
+      setIsTyping(true);
+    }, 17500);
+
+    const t9 = setTimeout(() => {
       setIsTyping(false);
+      triggerSyncFlash();
       setChatMessages(prev => [
         ...prev,
         {
           id: '5',
           sender: 'agent',
-          text: 'Perfect. Here\'s the booking summary — tap Approve and it\'s done.',
-          timestamp: '12:02 PM',
-          customNode: (
-            <div className="text-[11px] text-tt-muted font-bold mt-1 flex items-center gap-1 hover:text-tt-blue cursor-pointer select-none">
-              <span>Tack is handling the booking</span>
-              <ArrowRight size={12} className="stroke-[2.5]" />
-            </div>
-          )
-        }
-      ]);
-      setCurrentState('APPROVAL');
-    }, 7500);
-
-    // 9.0s — Auto-approval triggered (Confirmed state)
-    addTimer(() => {
-      setCurrentState('CONFIRMED');
-      setIsTyping(true);
-    }, 9000);
-
-    // 9.5s — Confirmed text displays on chat thread
-    addTimer(() => {
-      setIsTyping(false);
-      setChatMessages(prev => [
-        ...prev,
-        {
-          id: '6',
-          sender: 'agent',
-          text: 'Booked! 🎉 Confirmation: TCK-2025-4821. James P. is confirmed for Saturday.',
+          text: 'Booked! James P. is scheduled for Saturday, Jul 4 (9:00 AM – 11:00 AM). Mapped receipt: TCK-2025-4821.',
           timestamp: '12:02 PM'
         }
       ]);
-    }, 9500);
+      setCurrentState('CONFIRMED');
+    }, 19000);
 
-    // 13.0s — Loop resets to start
-    addTimer(() => {
-      runAutoplay();
-    }, 13000);
-  };
-
-  // Autoplay handler to update checklist box inside message bubble
-  const updateEmbeddedSearchingCard = (index: number) => {
-    setChatMessages(prev => {
-      return prev.map(msg => {
-        if (msg.id === '2') {
-          return {
-            ...msg,
-            customNode: (
-              <div className="bg-tt-page border border-tt-border rounded-xl p-3 mt-2 shadow-inner font-sans">
-                <div className="flex items-center gap-1.5 mb-2">
-                  <span className="font-serif font-extrabold text-[10px] text-tt-blue">T</span>
-                  <span className="text-[10px] font-bold text-tt-blue tracking-wider uppercase">TACK SEARCHING</span>
-                </div>
-                <div className="flex flex-col gap-1">
-                  <div className="flex items-center justify-between text-[11px] text-tt-navy font-semibold">
-                    <span>Thumbtack database</span>
-                    {index >= 1 ? (
-                      <span className="text-emerald-500 font-bold">✓</span>
-                    ) : (
-                      <span className="text-tt-blue animate-pulse">searching...</span>
-                    )}
-                  </div>
-                  <div className="flex items-center justify-between text-[11px] text-tt-navy font-semibold">
-                    <span>Verifying credentials</span>
-                    {index >= 2 ? (
-                      <span className="text-emerald-500 font-bold">✓</span>
-                    ) : index === 1 ? (
-                      <span className="text-tt-blue animate-pulse">verifying...</span>
-                    ) : (
-                      <span className="text-tt-border">pending</span>
-                    )}
-                  </div>
-                  <div className="flex items-center justify-between text-[11px] text-tt-navy font-semibold">
-                    <span>Checking availability</span>
-                    {index >= 3 ? (
-                      <span className="text-emerald-500 font-bold">✓</span>
-                    ) : index === 2 ? (
-                      <span className="text-tt-blue animate-pulse">checking...</span>
-                    ) : (
-                      <span className="text-tt-border">pending</span>
-                    )}
-                  </div>
-                  <div className="flex items-center justify-between text-[11px] text-tt-navy font-semibold">
-                    <span>Reading reviews</span>
-                    {index >= 4 ? (
-                      <span className="text-emerald-500 font-bold">✓</span>
-                    ) : index === 3 ? (
-                      <span className="text-tt-blue animate-pulse">analyzing...</span>
-                    ) : (
-                      <span className="text-tt-border">pending</span>
-                    )}
-                  </div>
-                  <div className="flex items-center justify-between text-[11px] text-tt-navy font-semibold">
-                    <span>Ranking matches</span>
-                    {index >= 5 ? (
-                      <span className="text-emerald-500 font-bold">✓</span>
-                    ) : index === 4 ? (
-                      <span className="text-tt-blue animate-pulse">ranking...</span>
-                    ) : (
-                      <span className="text-tt-border">pending</span>
-                    )}
-                  </div>
-                </div>
-              </div>
-            )
-          };
-        }
-        return msg;
-      });
-    });
-  };
-
-  // Toggle autoplay behaviors
-  useEffect(() => {
-    if (isAutoplay) {
-      runAutoplay();
-    } else {
-      handleReset();
-    }
     return () => {
-      autoplayTimersRef.current.forEach(clearTimeout);
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
+      clearTimeout(step1);
+      clearTimeout(step2);
+      clearTimeout(step3);
+      clearTimeout(step4);
+      clearTimeout(step5);
+      clearTimeout(t4);
+      clearTimeout(t5);
+      clearTimeout(t6);
+      clearTimeout(t7);
+      clearTimeout(t8);
+      clearTimeout(t9);
     };
   }, [isAutoplay]);
 
+  // Adjust scroll position inside agent side chat
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [chatMessages, isTyping]);
+
+  const handleReset = () => {
+    setChatMessages([]);
+    setCurrentState('IDLE');
+    setSearchCheckpoints(['pending', 'pending', 'pending', 'pending', 'pending']);
+    triggerSyncFlash();
+  };
+
+  const handleSkipToApproval = () => {
+    setIsAutoplay(false);
+    setIsTyping(false);
+    triggerSyncFlash();
+    setChatMessages([
+      {
+        id: 'skip-1',
+        sender: 'user',
+        text: 'Plumber Saturday under $150.',
+        timestamp: '12:00 PM'
+      },
+      {
+        id: 'skip-2',
+        sender: 'agent',
+        text: 'Checked live availabilities. Mapped candidate matching James P.',
+        timestamp: '12:01 PM'
+      }
+    ]);
+    setCurrentState('APPROVAL');
+  };
+
   const handleManualSend = (e: React.FormEvent) => {
     e.preventDefault();
-    // Manual chat triggers aren't strictly required to implement typing inputs, 
-    // but we can support moving state. Let's just trigger first message if they submit text.
-    if (isAutoplay) setIsAutoplay(false);
-    handleReset();
-    setTimeout(() => {
-      setIsAutoplay(true);
-    }, 100);
   };
 
   return (
@@ -481,11 +292,11 @@ export const Demo: React.FC = () => {
           <div className="flex items-center gap-2">
             <img src={claudeLogo} className="w-8 h-8 rounded-full object-cover shadow-sm shrink-0" alt="Claude" />
             <div>
-              <div className="text-[12px] font-bold text-tt-navy leading-none">Claude</div>
-              <div className="text-[11px] text-tt-muted font-semibold mt-0.5">via Tack integration</div>
+              <div className="text-[15px] font-bold text-tt-navy leading-none">Claude</div>
+              <div className="text-[12px] text-tt-muted font-semibold mt-0.5">via Tack</div>
             </div>
           </div>
-          <Badge variant="green" className="text-[11px] font-bold px-2 py-0.5">
+          <Badge variant="green" className="text-[12px] font-bold px-2 py-0.5 shadow-sm uppercase tracking-wider">
             Live demo
           </Badge>
         </div>
@@ -494,11 +305,11 @@ export const Demo: React.FC = () => {
         <div className="flex-grow overflow-y-auto p-4 flex flex-col gap-4 bg-slate-50 shadow-inner">
           
           {chatMessages.length === 0 && !isTyping && (
-            <div className="my-auto text-center px-6 flex flex-col items-center gap-3">
+            <div className="my-auto text-center px-6 flex flex-col items-center gap-3 select-none">
               <span className="font-serif text-[28px] font-bold text-tt-border">T</span>
-              <span className="text-[15px] font-bold text-tt-navy">Tack Sandbox initialized</span>
+              <span className="text-[15px] font-bold text-tt-navy">Tack Presentation Sandbox</span>
               <span className="text-[12px] text-tt-muted font-semibold max-w-[240px] leading-relaxed">
-                Choose autoplay below to watch Tack negotiate a plumber appointment.
+                Choose Autoplay below to watch Claude negotiate and schedule a pro booking.
               </span>
             </div>
           )}
@@ -514,16 +325,16 @@ export const Demo: React.FC = () => {
               >
                 {/* Message Bubble */}
                 <div
-                  className={`p-3.5 rounded-[18px] text-[12px] leading-relaxed font-semibold shadow-sm ${
+                  className={`p-3.5 shadow-sm text-[15px] leading-relaxed font-semibold ${
                     isAgent
-                      ? 'bg-white text-tt-navy border border-tt-border rounded-bl-sm'
-                      : 'bg-tt-dark text-white rounded-br-sm'
+                      ? 'bg-white text-tt-navy border border-tt-border rounded-[18px] rounded-bl-[4px]'
+                      : 'bg-tt-dark text-white rounded-[18px] rounded-br-[4px]'
                   }`}
                 >
                   {isAgent && (
-                    <div className="flex items-center gap-1.5 mb-1.5 text-[11px] text-tt-muted select-none">
+                    <div className="flex items-center gap-1.5 mb-1.5 text-[12px] text-tt-muted select-none">
                       <img src={claudeLogo} className="w-4 h-4 rounded-full object-cover" alt="Claude" />
-                      <span>Claude &middot; Agent API</span>
+                      <span>Claude &middot; via Tack</span>
                     </div>
                   )}
                   <p>{msg.text}</p>
@@ -533,16 +344,16 @@ export const Demo: React.FC = () => {
                 </div>
                 
                 {/* Time identifier */}
-                <span className="text-[11px] text-tt-muted font-bold px-1 select-none">
+                <span className="text-[12px] text-tt-muted font-bold px-1 select-none">
                   {msg.timestamp}
                 </span>
               </div>
             );
           })}
 
-          {/* Typing indicator indicator bubble */}
+          {/* Typing indicator bubble */}
           {isTyping && (
-            <div className="self-start bg-white border border-tt-border p-3.5 rounded-[18px] rounded-bl-sm flex gap-1 items-center shadow-sm">
+            <div className="self-start bg-white border border-tt-border p-3.5 rounded-[18px] rounded-bl-[4px] flex gap-1 items-center shadow-sm">
               <span className="w-2 h-2 rounded-full bg-tt-blue inline-block animate-bounce [animation-delay:0s]" />
               <span className="w-2 h-2 rounded-full bg-tt-blue inline-block animate-bounce [animation-delay:0.2s]" />
               <span className="w-2 h-2 rounded-full bg-tt-blue inline-block animate-bounce [animation-delay:0.4s]" />
@@ -565,7 +376,7 @@ export const Demo: React.FC = () => {
               type="button"
               className="h-9 w-9 bg-tt-dark text-white rounded-full flex items-center justify-center shadow-sm select-none"
             >
-              <ArrowUp size={16} />
+              <ArrowUp size={16} weight="regular" />
             </button>
           </form>
           <div className="text-center text-[11px] text-tt-muted font-bold mt-2">
@@ -576,18 +387,18 @@ export const Demo: React.FC = () => {
         {/* SandBox controls panel */}
         <div className="bg-tt-page border-t border-tt-border px-4 py-3 shrink-0 flex flex-col gap-2 shadow-inner">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-extrabold tracking-widest text-tt-muted uppercase">
+            <span className="text-[11px] font-bold tracking-widest text-tt-muted uppercase">
               Demo controls
             </span>
             
-            {/* Autoplay toggle switch */}
+            {/* Autoplay toggle switch track settings */}
             <div className="flex items-center gap-2 select-none">
               <span className="text-[11px] font-bold text-tt-muted">Autoplay</span>
               <button
                 type="button"
                 onClick={() => setIsAutoplay(!isAutoplay)}
                 className={`w-[36px] h-[20px] rounded-full transition-colors duration-300 relative focus:outline-none cursor-pointer flex items-center ${
-                  isAutoplay ? 'bg-tt-blue' : 'bg-slate-200'
+                  isAutoplay ? 'bg-tt-blue shadow-[0_1px_4px_rgba(0,159,212,0.25)]' : 'bg-tt-border'
                 }`}
               >
                 <div
@@ -599,33 +410,31 @@ export const Demo: React.FC = () => {
             </div>
           </div>
 
-          {/* Quick buttons */}
+          {/* Ghost styled buttons */}
           <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              className="flex-grow h-8 text-[12px] font-bold py-0"
+            <button
+              type="button"
+              className="flex-grow h-8 text-[12px] font-bold py-1 px-2 rounded-lg text-tt-muted hover:text-tt-blue hover:bg-tt-blue-tint border border-transparent hover:border-tt-blue/20 transition-all duration-300 cursor-pointer"
               onClick={handleReset}
             >
               Replay ↺
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="flex-grow h-8 text-[12px] font-bold py-0"
+            </button>
+            <button
+              type="button"
+              className="flex-grow h-8 text-[12px] font-bold py-1 px-2 rounded-lg text-tt-muted hover:text-tt-blue hover:bg-tt-blue-tint border border-transparent hover:border-tt-blue/20 transition-all duration-300 cursor-pointer"
               onClick={handleSkipToApproval}
             >
-              Skip to approval →
-            </Button>
+              Skip to approval &rarr;
+            </button>
           </div>
         </div>
 
       </div>
 
-      {/* SYNC INDICATOR BAR */}
+      {/* SYNC INDICATOR DIVIDER */}
       <div 
-        className={`w-[3px] h-full transition-colors duration-300 shrink-0 relative z-20 ${
-          pulseSync ? 'bg-tt-blue shadow-[0_0_12px_rgba(0,159,212,0.8)]' : 'bg-tt-border'
+        className={`w-[2px] h-full transition-all duration-300 shrink-0 relative z-20 ${
+          pulseSync ? 'bg-tt-blue shadow-[0_0_12px_rgba(0,159,212,0.8)] scale-x-125' : 'bg-tt-border'
         }`}
       />
 
@@ -634,13 +443,13 @@ export const Demo: React.FC = () => {
         
         {/* STATE 1: IDLE */}
         {currentState === 'IDLE' && (
-          <div className="m-auto text-center flex flex-col items-center gap-3 p-6 animate-page-in">
+          <div className="m-auto text-center flex flex-col items-center gap-3.5 p-6 animate-page-in">
             <div className="h-16 w-16 bg-white border border-tt-border flex items-center justify-center rounded-2xl shadow-sm text-tt-border select-none">
-              <span className="font-serif text-[42px] font-extrabold">T</span>
+              <span className="font-serif text-[48px] font-extrabold text-[#E2E8F0] select-none leading-none">T</span>
             </div>
             <h3 className="text-[15px] font-bold text-tt-navy">Waiting for your agent...</h3>
             <p className="text-[12px] text-tt-muted font-semibold max-w-[200px] leading-relaxed">
-              Start the conversation on the left or turn on Autoplay.
+              Start the conversation on the left.
             </p>
           </div>
         )}
@@ -648,7 +457,6 @@ export const Demo: React.FC = () => {
         {/* STATE 2: SEARCHING */}
         {currentState === 'SEARCHING' && (
           <div className="w-full h-full bg-tt-dark flex flex-col justify-center items-center px-6 text-white overflow-hidden animate-page-in">
-            {/* Background lights inside panel */}
             <div className="absolute w-[300px] h-[300px] bg-tt-blue/10 rounded-full blur-[80px] pointer-events-none" />
             <div className="absolute inset-0 bg-dot-pattern-dark opacity-10 pointer-events-none" />
 
@@ -669,43 +477,122 @@ export const Demo: React.FC = () => {
                 </p>
               </div>
 
-              {/* Staggered progress card inside right pane */}
-              <div className="w-full bg-white rounded-xl overflow-hidden shadow-xl text-left border border-white/5">
-                <IntelligenceRow
-                  icon={ThumbtackIcon}
-                  iconBgColor="bg-tt-blue-tint"
-                  iconColor="text-tt-blue font-serif"
-                  text="Searching database..."
-                  status={searchCheckpoints[0]}
-                />
-                <IntelligenceRow
-                  icon={Shield}
-                  iconBgColor="bg-emerald-100"
-                  iconColor="text-emerald-500"
-                  text="Verifying credentials..."
-                  status={searchCheckpoints[1]}
-                />
-                <IntelligenceRow
-                  icon={Star}
-                  iconBgColor="bg-[#FEF9EE]"
-                  iconColor="text-[#F4A623]"
-                  text="Checking reviews..."
-                  status={searchCheckpoints[2]}
-                />
-                <IntelligenceRow
-                  icon={Calendar}
-                  iconBgColor="bg-sky-100"
-                  iconColor="text-sky-500"
-                  text="Checking availability..."
-                  status={searchCheckpoints[3]}
-                />
-                <IntelligenceRow
-                  icon={TrendingUp}
-                  iconBgColor="bg-indigo-100"
-                  iconColor="text-indigo-500"
-                  text="Ranking matches..."
-                  status={searchCheckpoints[4]}
-                />
+              {/* Progress checklist card */}
+              <div className="w-full bg-white border border-slate-200/80 rounded-2xl p-5 text-slate-800 shadow-[0_8px_30px_rgb(0,0,0,0.04)] text-left overflow-hidden relative">
+                <div className="flex items-center gap-2 select-none relative z-10">
+                  <div className="w-5 h-5 rounded-full bg-tt-dark flex items-center justify-center shrink-0">
+                    <span className="font-serif font-extrabold text-[10px] text-white">T</span>
+                  </div>
+                  <span className="text-[11px] font-bold tracking-widest text-slate-800 uppercase">
+                    GATHERING INTELLIGENCE
+                  </span>
+                </div>
+
+                <div className="flex flex-col mt-4 relative z-10 font-sans">
+                  {/* Row 1 */}
+                  <div className="flex flex-col border-b border-slate-100 py-2.5">
+                    <div className="flex items-center gap-2.5">
+                      <img src={searchImage} className={`w-4 h-4 object-contain shrink-0 transition-all duration-300 ${searchCheckpoints[0] === 'done' ? '' : searchCheckpoints[0] === 'loading' ? 'opacity-80 animate-pulse' : 'opacity-30 grayscale'}`} alt="Search" />
+                      <span className={`text-[12.5px] font-semibold flex-grow transition-colors duration-300 ${searchCheckpoints[0] === 'done' ? 'text-slate-800' : searchCheckpoints[0] === 'loading' ? 'text-slate-800 animate-pulse' : 'text-slate-400'}`}>
+                        Searching database...
+                      </span>
+                      {searchCheckpoints[0] === 'done' && <CheckCircle size={16} weight="regular" className="text-[#22C55E] animate-pop-in shrink-0" />}
+                    </div>
+                    {/* Location detail map chip */}
+                    <div className={`overflow-hidden transition-all duration-300 ease-in-out ${searchCheckpoints[0] !== 'pending' ? 'max-h-[55px] opacity-100 mt-2' : 'max-h-0 opacity-0'}`}>
+                      <div className="ml-7 flex items-center gap-2.5 bg-[#F8FAFC] border border-slate-100 rounded-xl p-1.5 hover:border-slate-300 transition-colors duration-300">
+                        <div className="w-7 h-7 rounded-md bg-white border border-slate-100 flex items-center justify-center shrink-0 shadow-sm text-slate-600 animate-scale-in">
+                          <MapPin size={16} weight="regular" />
+                        </div>
+                        <div className="flex flex-col min-w-0">
+                          <span className="text-[10px] text-slate-800 font-bold">Location</span>
+                          <span className="text-[10px] text-slate-500 truncate">Austin, TX (within 15 miles)</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Row 2 */}
+                  <div className="flex flex-col border-b border-slate-100 py-2.5">
+                    <div className="flex items-center gap-2.5">
+                      <img src={verifiedImage} className={`w-4 h-4 object-contain shrink-0 transition-all duration-300 ${searchCheckpoints[1] === 'done' ? '' : searchCheckpoints[1] === 'loading' ? 'opacity-80 animate-pulse' : 'opacity-30 grayscale'}`} alt="Verified" />
+                      <span className={`text-[12.5px] font-semibold flex-grow transition-colors duration-300 ${searchCheckpoints[1] === 'done' ? 'text-slate-800' : searchCheckpoints[1] === 'loading' ? 'text-slate-800 animate-pulse' : 'text-slate-400'}`}>
+                        Verifying credentials...
+                      </span>
+                      {searchCheckpoints[1] === 'done' && <CheckCircle size={16} weight="regular" className="text-[#22C55E] animate-pop-in shrink-0" />}
+                    </div>
+                    {/* Verification detail chip */}
+                    <div className={`overflow-hidden transition-all duration-300 ease-in-out ${searchCheckpoints[1] !== 'pending' ? 'max-h-[45px] opacity-100 mt-1.5' : 'max-h-0 opacity-0'}`}>
+                      <div className="ml-7 flex items-center gap-2 text-[10px] text-slate-600 font-bold">
+                        <span className="px-1.5 py-0.5 bg-white border border-slate-200 rounded shadow-sm">License: OK</span>
+                        <span className="px-1.5 py-0.5 bg-white border border-slate-200 rounded shadow-sm">Verified</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Row 3 */}
+                  <div className="flex flex-col border-b border-slate-100 py-2.5">
+                    <div className="flex items-center gap-2.5">
+                      <img src={thumbtackImage} className={`w-4 h-4 object-contain shrink-0 transition-all duration-300 ${searchCheckpoints[2] === 'done' ? '' : searchCheckpoints[2] === 'loading' ? 'opacity-80 animate-pulse' : 'opacity-30 grayscale'}`} alt="Reviews" />
+                      <span className={`text-[12.5px] font-semibold flex-grow transition-colors duration-300 ${searchCheckpoints[2] === 'done' ? 'text-slate-800' : searchCheckpoints[2] === 'loading' ? 'text-slate-800 animate-pulse' : 'text-slate-400'}`}>
+                        Checking reviews...
+                      </span>
+                      {searchCheckpoints[2] === 'done' && <CheckCircle size={16} weight="regular" className="text-[#22C55E] animate-pop-in shrink-0" />}
+                    </div>
+                    {/* Reviews detail chip */}
+                    <div className={`overflow-hidden transition-all duration-300 ease-in-out ${searchCheckpoints[2] !== 'pending' ? 'max-h-[45px] opacity-100 mt-1.5' : 'max-h-0 opacity-0'}`}>
+                      <div className="ml-7 flex items-center gap-1.5 text-[10px] text-slate-500 font-semibold">
+                        <span>Rating:</span>
+                        <span className="text-slate-800 font-bold">4.8+ Stars</span>
+                        <span>&bull;</span>
+                        <span>80+ reviews</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Row 4 */}
+                  <div className="flex flex-col border-b border-slate-100 py-2.5">
+                    <div className="flex items-center gap-2.5">
+                      <img src={calendarImage} className={`w-4 h-4 object-contain shrink-0 transition-all duration-300 ${searchCheckpoints[3] === 'done' ? '' : searchCheckpoints[3] === 'loading' ? 'opacity-80 animate-pulse' : 'opacity-30 grayscale'}`} alt="Calendar" />
+                      <span className={`text-[12.5px] font-semibold flex-grow transition-colors duration-300 ${searchCheckpoints[3] === 'done' ? 'text-slate-800' : searchCheckpoints[3] === 'loading' ? 'text-slate-800 animate-pulse' : 'text-slate-400'}`}>
+                        Checking availability...
+                      </span>
+                      {searchCheckpoints[3] === 'done' && <CheckCircle size={16} weight="regular" className="text-[#22C55E] animate-pop-in shrink-0" />}
+                    </div>
+                    {/* Calendar detail chip */}
+                    <div className={`overflow-hidden transition-all duration-300 ease-in-out ${searchCheckpoints[3] !== 'pending' ? 'max-h-[55px] opacity-100 mt-2' : 'max-h-0 opacity-0'}`}>
+                      <div className="ml-7 flex items-center gap-2.5 bg-[#F8FAFC] border border-slate-100 rounded-xl p-1.5 hover:border-slate-300 transition-colors duration-300">
+                        <div className="w-7 h-7 rounded-md bg-white border border-slate-100 flex items-center justify-center shrink-0 shadow-sm text-slate-600 animate-scale-in">
+                          <CalendarBlank size={16} weight="regular" />
+                        </div>
+                        <div className="flex flex-col min-w-0">
+                          <span className="text-[10px] text-slate-800 font-bold">Openings</span>
+                          <span className="text-[10px] text-slate-500 truncate">
+                            {searchCheckpoints[3] === 'done' ? '3 slot openings found' : 'Searching slots...'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Row 5 */}
+                  <div className="flex flex-col py-2.5">
+                    <div className="flex items-center gap-2.5">
+                      <img src={rankingImage} className={`w-4 h-4 object-contain shrink-0 transition-all duration-300 ${searchCheckpoints[4] === 'done' ? '' : searchCheckpoints[4] === 'loading' ? 'opacity-80 animate-pulse' : 'opacity-30 grayscale'}`} alt="Ranking" />
+                      <span className={`text-[12.5px] font-semibold flex-grow transition-colors duration-300 ${searchCheckpoints[4] === 'done' ? 'text-slate-800' : searchCheckpoints[4] === 'loading' ? 'text-slate-800 animate-pulse' : 'text-slate-400'}`}>
+                        Ranking matches...
+                      </span>
+                      {searchCheckpoints[4] === 'done' && <CheckCircle size={16} weight="regular" className="text-[#22C55E] animate-pop-in shrink-0" />}
+                    </div>
+                    {/* Ranking match score chip */}
+                    <div className={`overflow-hidden transition-all duration-300 ease-in-out ${searchCheckpoints[4] !== 'pending' ? 'max-h-[45px] opacity-100 mt-1.5' : 'max-h-0 opacity-0'}`}>
+                      <div className="ml-7 flex items-center gap-1.5 text-[10px]">
+                        <span className="text-slate-500 font-semibold">Top Match:</span>
+                        <span className="text-slate-800 font-bold">98% Match</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -713,10 +600,10 @@ export const Demo: React.FC = () => {
 
         {/* STATE 3: RESULTS */}
         {currentState === 'RESULTS' && (
-          <div className="w-full py-8 px-4 flex flex-col gap-6 max-w-[460px] mx-auto animate-page-in">
+          <div className="w-full py-8 px-4 flex flex-col gap-6 max-w-[460px] mx-auto animate-page-in text-left">
             <div>
-              <span className="text-[12px] text-tt-muted font-bold tracking-wider uppercase">
-                3 pros found &bull; Saturday AM &bull; under $150
+              <span className="text-[12px] text-tt-muted font-bold tracking-wider uppercase select-none">
+                3 pros found &bull; Sat AM &bull; under $150
               </span>
               <h3 className="text-[28px] font-bold font-serif text-tt-navy mt-1 select-none">
                 Agent Recommendations
@@ -724,21 +611,20 @@ export const Demo: React.FC = () => {
             </div>
 
             {/* Best Match Hero Card */}
-            <Card variant="featured" hoverable={false} className="p-5 rounded-xl bg-white flex flex-col gap-4">
+            <Card variant="featured" hoverable={false} className="p-5 rounded-xl bg-white flex flex-col gap-4 border-2 border-tt-dark shadow-lg">
               <div className="flex items-center justify-between">
-                <Badge variant="blue" className="text-[11px] font-bold px-2 py-0.5">Best match</Badge>
-                <div className="flex items-center gap-1 text-[12px] font-bold text-tt-blue">
-                  <Sparkles size={12} className="text-tt-blue animate-pulse" />
-                  <span>Tack recommended</span>
+                <Badge variant="dark" className="text-[11px] font-bold px-2 py-0.5">Best match</Badge>
+                <div className="text-[12px] font-bold text-slate-700 select-none">
+                  Tack recommended
                 </div>
               </div>
 
               <div className="flex gap-3">
                 <Avatar initials="JP" imageSrc={person1} size="sm" className="shrink-0 shadow-sm" />
                 <div>
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-1.5">
                     <span className="text-[12px] font-bold text-tt-navy">James P.</span>
-                    <BadgeCheck size={14} className="text-tt-blue fill-tt-blue-tint shrink-0" />
+                    <Seal size={14} weight="fill" className="text-slate-800 shrink-0" />
                   </div>
                   <p className="text-[11px] text-tt-muted font-semibold">Licensed Plumber</p>
                 </div>
@@ -763,14 +649,14 @@ export const Demo: React.FC = () => {
               <Button
                 variant="primary"
                 size="sm"
-                className="w-full mt-1 font-bold text-[12px]"
+                className="w-full mt-1 font-bold text-[12px] active-press shadow-sm animate-pop-in"
                 onClick={() => setCurrentState('APPROVAL')}
               >
-                Book via Tack →
+                Book via Tack &rarr;
               </Button>
             </Card>
 
-            {/* Other pros */}
+            {/* Other options */}
             <div className="flex flex-col gap-3">
               <span className="text-[11px] font-bold tracking-widest text-tt-muted uppercase select-none">Other options</span>
               
@@ -808,7 +694,7 @@ export const Demo: React.FC = () => {
         {/* STATE 4: APPROVAL */}
         {currentState === 'APPROVAL' && (
           <div className="w-full py-8 px-4 flex justify-center items-center h-full animate-page-in">
-            <Card hoverable={false} className="bg-white border border-tt-border shadow-xl rounded-[20px] p-6 max-w-[420px] w-full flex flex-col gap-5">
+            <Card hoverable={false} className="bg-white border border-tt-border shadow-xl rounded-[20px] p-6 max-w-[420px] w-full flex flex-col gap-5 text-left">
               <div className="text-center">
                 <h2 className="text-[28px] font-bold font-serif text-tt-navy mb-1 leading-none select-none">
                   Review booking
@@ -818,43 +704,43 @@ export const Demo: React.FC = () => {
                 </p>
               </div>
 
-              {/* Pro Row */}
-              <div className="flex items-center gap-2 pb-4 border-b border-tt-border">
+              {/* Pro Info Row */}
+              <div className="flex items-center gap-3 pb-4 border-b border-tt-border">
                 <Avatar initials="JP" imageSrc={person1} size="sm" className="shrink-0 shadow-sm" />
                 <div>
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-1.5">
                     <span className="text-[15px] font-bold text-tt-navy">James P.</span>
-                    <BadgeCheck size={14} className="text-tt-blue fill-tt-blue-tint shrink-0" />
+                    <Seal size={14} weight="fill" className="text-tt-blue shrink-0" />
                   </div>
-                  <p className="text-[12px] text-tt-muted font-semibold">Licensed Plumber</p>
+                  <p className="text-[12px] text-tt-muted font-semibold">Licensed Plumber &bull; Licensed</p>
                 </div>
               </div>
 
               {/* Details table */}
               <div className="flex flex-col gap-2.5">
-                <div className="flex justify-between items-center py-0.5 border-b border-slate-100">
+                <div className="flex justify-between items-center py-1 border-b border-slate-100">
                   <span className="text-[12px] text-tt-muted font-bold uppercase tracking-wider flex items-center gap-1.5">
-                    <Wrench size={13} /> Service
+                    <Wrench size={13} weight="regular" /> Service
                   </span>
                   <span className="text-[12px] font-bold text-tt-navy">Plumbing Repair</span>
                 </div>
-                <div className="flex justify-between items-center py-0.5 border-b border-slate-100">
+                <div className="flex justify-between items-center py-1 border-b border-slate-100">
                   <span className="text-[12px] text-tt-muted font-bold uppercase tracking-wider flex items-center gap-1.5">
-                    <Calendar size={13} /> Date
+                    <CalendarBlank size={13} weight="regular" /> Date
                   </span>
                   <span className="text-[12px] font-bold text-tt-navy">Saturday, Jul 4</span>
                 </div>
-                <div className="flex justify-between items-center py-0.5 border-b border-slate-100">
+                <div className="flex justify-between items-center py-1 border-b border-slate-100">
                   <span className="text-[12px] text-tt-muted font-bold uppercase tracking-wider flex items-center gap-1.5">
-                    <Clock size={13} /> Time
+                    <Clock size={13} weight="regular" /> Time
                   </span>
                   <span className="text-[12px] font-bold text-tt-navy">9:00 AM – 11:00 AM</span>
                 </div>
-                <div className="flex justify-between items-center py-0.5 border-b border-slate-100">
+                <div className="flex justify-between items-center py-1 border-b border-slate-100">
                   <span className="text-[12px] text-tt-muted font-bold uppercase tracking-wider flex items-center gap-1.5">
-                    <MapPin size={13} /> Location
+                    <MapPin size={13} weight="regular" /> Location
                   </span>
-                  <span className="text-[12px] font-bold text-tt-navy truncate max-w-[160px]">742 Main St</span>
+                  <span className="text-[12px] font-bold text-tt-navy truncate max-w-[160px]">742 Main St, San Francisco</span>
                 </div>
               </div>
 
@@ -865,7 +751,7 @@ export const Demo: React.FC = () => {
                   <span>$120.00</span>
                 </div>
                 <div className="flex justify-between text-[11px] text-tt-muted font-bold">
-                  <span>Platform fee</span>
+                  <span>Platform fee (5%)</span>
                   <span>$6.00</span>
                 </div>
                 <div className="h-[1px] bg-tt-border" />
@@ -873,34 +759,33 @@ export const Demo: React.FC = () => {
                   <span>Total</span>
                   <span>$126.00</span>
                 </div>
-                <div className="flex items-center gap-1 text-[11px] text-tt-muted font-bold justify-center mt-1">
-                  <CreditCard size={12} />
+                <div className="flex items-center gap-1.5 text-[11px] text-tt-muted font-bold justify-center mt-1 bg-white border border-tt-border rounded py-1 px-3 self-center shadow-sm">
+                  <CreditCard size={12} weight="regular" className="text-tt-muted" />
                   <span>Visa ending in 4242</span>
                 </div>
               </div>
 
-              {/* Actions */}
+              {/* Action buttons */}
               <Button
                 variant="primary"
                 size="lg"
                 className="w-full shadow-md active-press text-[15px] font-bold"
                 onClick={() => {
                   setCurrentState('CONFIRMED');
-                  // Update chat thread if autoplay is off
                   if (!isAutoplay) {
                     setChatMessages(prev => [
                       ...prev,
                       {
                         id: 'manual-confirmed',
                         sender: 'agent',
-                        text: 'Booked! 🎉 Confirmation: TCK-2025-4821. James P. is confirmed for Saturday.',
-                        timestamp: '9:05 AM'
+                        text: 'Booked! 🎉 Confirmation: TCK-2025-4821',
+                        timestamp: '12:02 PM'
                       }
                     ]);
                   }
                 }}
               >
-                Approve & book
+                Approve & book &rarr;
               </Button>
             </Card>
           </div>
@@ -908,13 +793,13 @@ export const Demo: React.FC = () => {
 
         {/* STATE 5: CONFIRMED */}
         {currentState === 'CONFIRMED' && (
-          <div className="w-full py-8 px-4 flex flex-col justify-center items-center h-full max-w-[420px] mx-auto animate-page-in">
-            {/* Check success bubble */}
-            <div className="h-16 w-16 rounded-full bg-[#DCFCE7] flex items-center justify-center text-[#16A34A] border-2 border-[#16A34A]/20 shadow-md animate-scale-in mb-4">
-              <Check size={32} className="stroke-[3.5]" />
+          <div className="w-full py-8 px-4 flex flex-col justify-center items-center h-full max-w-[420px] mx-auto animate-page-in text-left">
+            {/* Check success circle */}
+            <div className="h-16 w-16 rounded-full bg-[#DCFCE7] flex items-center justify-center text-[#16A34A] border-2 border-[#16A34A]/20 shadow-[0_4px_16px_rgba(22,163,74,0.15)] animate-scale-in mb-4">
+              <Check size={32} weight="regular" />
             </div>
 
-            <div className="text-center mb-6">
+            <div className="text-center mb-6 w-full">
               <h2 className="text-[28px] font-bold font-serif text-tt-navy leading-none mb-1.5">
                 You're all set.
               </h2>
@@ -940,8 +825,8 @@ export const Demo: React.FC = () => {
                 </div>
               </div>
 
-              <div className="text-[12px] text-tt-navy bg-tt-page rounded-lg p-3 border border-tt-border flex flex-col gap-1 shadow-inner">
-                <span className="font-bold text-[10px] text-tt-muted uppercase tracking-wider block">Scheduled</span>
+              <div className="text-[12px] text-tt-navy bg-tt-page rounded-lg p-3 border border-tt-border flex flex-col gap-1 shadow-inner font-semibold">
+                <span className="font-bold text-[10px] text-tt-muted uppercase tracking-wider block mb-0.5">Scheduled</span>
                 Saturday, May 3 &middot; 9:00 AM – 11:00 AM
               </div>
 

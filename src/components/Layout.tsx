@@ -8,10 +8,10 @@ interface LayoutProps {
 export const Layout: React.FC<LayoutProps> = ({ children }) => {
   const location = useLocation();
   
-  // Searching screen has a custom full-bleed dark theme, so we omit the regular Navbar/Footer there
-  const isSearchingScreen = location.pathname === '/searching';
+  // Custom full-screen layouts handle their own headers/footers
+  const isCustomFullPage = ['/chat', '/track', '/'].includes(location.pathname);
 
-  if (isSearchingScreen) {
+  if (isCustomFullPage) {
     return <>{children}</>;
   }
 
@@ -37,20 +37,17 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
 
           {/* Right utilities navigation */}
           <nav className="flex items-center gap-4 md:gap-6 text-[15px] text-tt-navy font-semibold">
-            <Link to="/connect" className="hover:text-tt-blue hidden sm:inline-block transition-colors">
-              Connect Agent
-            </Link>
-            <Link to="/request" className="hover:text-tt-blue transition-colors">
-              New Request
+            <Link to="/chat" className="hover:text-tt-blue hidden sm:inline-block transition-colors">
+              Conversational Feed
             </Link>
             <Link to="/demo" className="flex items-center gap-1 hover:text-tt-blue transition-colors">
-              Demo
+              Demo Panel
               <span className="text-[12px] font-bold text-tt-blue bg-tt-blue-tint border border-tt-blue/40 px-2 py-0.5 rounded-full shadow-sm scale-90 select-none">
                 Demo
               </span>
             </Link>
             <Link 
-              to="/connect"
+              to="/chat"
               className="bg-tt-dark text-white text-[12px] md:text-[15px] px-4 py-2 rounded-full hover:bg-tt-blue transition-colors active-press shadow-sm"
             >
               Try Tack →

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Mic, ArrowRight } from 'lucide-react';
+import { Microphone, ArrowRight } from '@phosphor-icons/react';
 import { useBooking } from '../context/BookingContext';
 import type { TimePreferenceType } from '../context/BookingContext';
 import { Button } from '../components/Button';
@@ -23,9 +23,9 @@ export const Request: React.FC = () => {
 
   const suggestions = [
     "Fix a leaking pipe this weekend",
-    "Deep clean before my guests arrive Saturday",
-    "Need an electrician for a faulty outlet",
-    "Help me find a handyman for small repairs"
+    "Deep clean a 2 bedroom apartment",
+    "Electrical outlet replacement",
+    "Handyman to mount a TV"
   ];
 
   const handleSuggestionClick = (text: string) => {
@@ -35,67 +35,63 @@ export const Request: React.FC = () => {
   const toggleRecording = () => {
     if (isRecording) {
       setIsRecording(false);
-      if (timerRef.current) clearTimeout(timerRef.current);
+      setMicTooltip('Use voice input');
+      if (timerRef.current) clearInterval(timerRef.current);
+      // Mock voice transcribed query
+      setRequestText("My shower has been leaking since yesterday. Need a certified plumber Saturday morning. Budget under $150.");
     } else {
       setIsRecording(true);
-      setMicTooltip('Listening...');
-      
-      // Simulate speech transcription after 3.5 seconds
-      timerRef.current = setTimeout(() => {
-        setRequestText("Need a plumber to fix a leaking pipe in my bathroom this Saturday morning, preferably before noon.");
-        setIsRecording(false);
-        setMicTooltip('Use voice input');
-      }, 3500);
+      setMicTooltip('Stop recording');
+      setRequestText('');
+      let count = 0;
+      const phrases = ["Listening...", "Listening...", "Transcribing voice..."];
+      timerRef.current = setInterval(() => {
+        setRequestText(phrases[count % phrases.length]);
+        count++;
+      }, 1000);
     }
   };
 
   useEffect(() => {
     return () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
+      if (timerRef.current) clearInterval(timerRef.current);
     };
   }, []);
 
-  const handleSearchSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!requestText.trim()) return;
-    navigate('/searching');
+    if (requestText.trim() && !isRecording) {
+      navigate('/searching');
+    }
   };
 
   return (
-    <div className="flex-grow flex items-center justify-center px-4 py-16 bg-tt-page animate-page-in font-sans relative overflow-hidden">
-      {/* Ambient background blur lights */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[450px] h-[450px] bg-tt-blue-tint/30 rounded-full blur-[100px] pointer-events-none" />
+    <div className="flex-grow bg-tt-page min-h-screen py-12 px-4 flex items-center justify-center animate-page-in font-sans relative overflow-hidden">
+      {/* Ambient background lights */}
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[400px] h-[400px] bg-tt-blue-tint/20 rounded-full blur-[100px] pointer-events-none" />
 
-      <div className="w-full max-w-[520px] flex flex-col gap-8 relative z-10">
+      <div className="w-full max-w-[480px] flex flex-col gap-6 relative z-10 text-left">
         
-        {/* Wordmark logo & progress */}
-        <div className="flex flex-col items-center gap-4">
-          <div className="flex flex-col items-center">
-            <span className="font-serif text-[32px] font-bold text-tt-dark leading-none tracking-tight flex items-center gap-1">
-              Tack
-              <span className="inline-block w-1.5 h-1.5 rounded-full bg-tt-blue" />
-            </span>
-            <span className="text-[11px] font-bold text-tt-muted tracking-widest uppercase font-sans mt-1">
-              by Thumbtack
-            </span>
-          </div>
-          <ProgressDots currentStep={1} totalSteps={3} />
+        {/* Progress dots bar */}
+        <div className="flex justify-center">
+          <ProgressDots totalSteps={3} currentStep={1} />
         </div>
 
-        {/* Header Text */}
+        {/* Header Title */}
         <div className="text-center">
-          <h2 className="text-[28px] font-bold font-serif text-tt-navy leading-snug mb-1">
-            What do you need done?
+          <h2 className="text-[28px] font-bold font-serif text-tt-navy leading-tight select-none">
+            Describe your request
           </h2>
-          <p className="text-[12px] text-tt-muted leading-relaxed">
-            Describe it naturally — your agent handles the rest.
+          <p className="text-[12px] text-tt-muted font-semibold mt-1 max-w-[320px] mx-auto leading-relaxed">
+            Say what you need in plain language. Tack will coordinate quotes and availability.
           </p>
         </div>
 
-        <form onSubmit={handleSearchSubmit} className="flex flex-col gap-6">
+        {/* Form setup */}
+        <form onSubmit={handleSubmit} className="flex flex-col gap-5">
           
-          {/* Main text area card with glow focus styling */}
-          <div className="bg-white rounded-[20px] border border-tt-border shadow-[0_6px_20px_rgba(28,43,51,0.05)] overflow-hidden flex flex-col focus-within:border-tt-blue focus-within:ring-4 focus-within:ring-tt-blue/10 transition-all duration-300">
+          {/* Main textarea container card */}
+          <div className="bg-white border border-tt-border rounded-[20px] overflow-hidden flex flex-col shadow-sm focus-within:ring-4 focus-within:ring-tt-blue/5 focus-within:border-tt-blue transition-all duration-300">
             <textarea
               value={requestText}
               onChange={(e) => setRequestText(e.target.value)}
@@ -130,7 +126,7 @@ export const Request: React.FC = () => {
                       : 'text-tt-muted hover:text-tt-blue hover:bg-tt-page border border-tt-border bg-white shadow-sm'
                   } cursor-pointer`}
                 >
-                  <Mic size={18} className={isRecording ? 'animate-pulse' : ''} />
+                  <Microphone size={18} weight="regular" className={isRecording ? 'animate-pulse' : ''} />
                 </button>
 
                 {isRecording && (
@@ -150,15 +146,16 @@ export const Request: React.FC = () => {
                 type="submit"
                 variant="primary"
                 size="sm"
-                className="h-[40px] px-5 active-press shadow-sm font-bold text-[13px]"
+                className="h-[40px] px-5 active-press shadow-sm font-bold text-[13px] flex items-center gap-1.5"
                 disabled={!requestText.trim() || isRecording}
               >
-                Ask Tack <ArrowRight size={14} className="ml-1.5 shrink-0" />
+                <span>Ask Tack</span>
+                <ArrowRight size={14} weight="regular" className="shrink-0" />
               </Button>
             </div>
           </div>
 
-          {/* Quick suggestion chips with refined tags */}
+          {/* Quick suggestion chips */}
           <div className="flex flex-col gap-2">
             <span className="text-[12px] font-bold tracking-wider text-tt-muted uppercase select-none">
               Try asking:
@@ -176,7 +173,7 @@ export const Request: React.FC = () => {
             </div>
           </div>
 
-          {/* Time preference card with focus glows */}
+          {/* Time preference card */}
           <div className="bg-white rounded-2xl border border-tt-border p-5 flex flex-col gap-4 shadow-sm">
             <span className="text-[12px] font-bold tracking-wider text-tt-navy uppercase select-none">
               When do you need it?

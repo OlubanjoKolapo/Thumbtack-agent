@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, BadgeCheck, Wrench, Calendar, Clock, MapPin, User, Sparkles, CreditCard, Star } from 'lucide-react';
+import { ArrowLeft, Seal, Wrench, CalendarBlank, Clock, MapPin, User, CreditCard, Star } from '@phosphor-icons/react';
 import { useBooking } from '../context/BookingContext';
 import { mockProviders } from '../data/providers';
 import { Button } from '../components/Button';
@@ -39,14 +39,14 @@ export const Approve: React.FC = () => {
       {/* Ambient background blur lights */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[400px] h-[400px] bg-tt-blue-tint/20 rounded-full blur-[100px] pointer-events-none" />
 
-      <div className="w-full max-w-[520px] flex flex-col gap-4 relative z-10">
+      <div className="w-full max-w-[520px] flex flex-col gap-4 relative z-10 text-left">
         
         {/* Back Link */}
         <button
           onClick={handleCancel}
           className="self-start flex items-center gap-1.5 text-[12px] font-bold text-tt-blue hover:text-tt-deep cursor-pointer transition-colors"
         >
-          <ArrowLeft size={14} className="stroke-[2.5]" />
+          <ArrowLeft size={14} weight="regular" />
           Back to results
         </button>
 
@@ -72,7 +72,7 @@ export const Approve: React.FC = () => {
                   {pro.name}
                 </span>
                 {pro.verified && (
-                  <BadgeCheck size={16} className="text-tt-blue fill-tt-blue-tint shrink-0" />
+                  <Seal size={16} weight="fill" className="text-tt-blue shrink-0" />
                 )}
               </div>
               <p className="text-[12px] text-tt-muted font-semibold">
@@ -83,7 +83,7 @@ export const Approve: React.FC = () => {
             {/* Rating side block */}
             <div className="text-right shrink-0">
               <div className="flex items-center gap-0.5 justify-end text-[12px] font-bold text-tt-navy">
-                <Star size={12} className="text-tt-star fill-tt-star stroke-none mr-0.5" />
+                <Star size={12} weight="fill" color="#F4A623" className="mr-0.5 shrink-0" />
                 {pro.rating}
               </div>
               <div className="text-[12px] text-tt-muted font-semibold">
@@ -97,7 +97,7 @@ export const Approve: React.FC = () => {
             {/* Service */}
             <div className="flex items-center justify-between py-1 border-b border-slate-100">
               <div className="flex items-center gap-2 text-[12px] text-tt-muted font-semibold uppercase tracking-wider">
-                <Wrench size={16} className="text-tt-muted shrink-0" />
+                <Wrench size={16} weight="regular" className="text-tt-muted shrink-0" />
                 <span>Service</span>
               </div>
               <span className="text-[15px] font-bold text-tt-navy">
@@ -108,7 +108,7 @@ export const Approve: React.FC = () => {
             {/* Date */}
             <div className="flex items-center justify-between py-1 border-b border-slate-100">
               <div className="flex items-center gap-2 text-[12px] text-tt-muted font-semibold uppercase tracking-wider">
-                <Calendar size={16} className="text-tt-muted shrink-0" />
+                <CalendarBlank size={16} weight="regular" className="text-tt-muted shrink-0" />
                 <span>Date</span>
               </div>
               <span className="text-[15px] font-bold text-tt-navy">
@@ -119,18 +119,18 @@ export const Approve: React.FC = () => {
             {/* Time */}
             <div className="flex items-center justify-between py-1 border-b border-slate-100">
               <div className="flex items-center gap-2 text-[12px] text-tt-muted font-semibold uppercase tracking-wider">
-                <Clock size={16} className="text-tt-muted shrink-0" />
+                <Clock size={16} weight="regular" className="text-tt-muted shrink-0" />
                 <span>Time slot</span>
               </div>
               <span className="text-[15px] font-bold text-tt-navy">
-                {pro.availability.replace('Sat ', '')}
+                {pro.availability[0]?.replace('Sat ', '') || ''}
               </span>
             </div>
             
             {/* Location */}
             <div className="flex items-center justify-between py-1 border-b border-slate-100">
               <div className="flex items-center gap-2 text-[12px] text-tt-muted font-semibold uppercase tracking-wider">
-                <MapPin size={16} className="text-tt-muted shrink-0" />
+                <MapPin size={16} weight="regular" className="text-tt-muted shrink-0" />
                 <span>Location</span>
               </div>
               <span className="text-[15px] font-bold text-tt-navy truncate max-w-[240px]" title="742 Main St, San Francisco">
@@ -141,7 +141,7 @@ export const Approve: React.FC = () => {
             {/* Provider License */}
             <div className="flex items-center justify-between py-1">
               <div className="flex items-center gap-2 text-[12px] text-tt-muted font-semibold uppercase tracking-wider">
-                <User size={16} className="text-tt-muted shrink-0" />
+                <User size={16} weight="regular" className="text-tt-muted shrink-0" />
                 <span>Provider</span>
               </div>
               <span className="text-[15px] font-bold text-tt-navy">
@@ -153,7 +153,6 @@ export const Approve: React.FC = () => {
           {/* AI RECOMMENDATION INSIGHT */}
           <div className="bg-[#FFFBEB] border border-[#FDE68A] rounded-xl p-3.5 flex flex-col gap-1.5 shadow-[inset_0_1px_2px_rgba(253,230,138,0.15)]">
             <div className="flex items-center gap-1.5 text-[12px] font-bold text-[#92400E] uppercase tracking-wide">
-              <Sparkles size={14} className="text-[#F59E0B] shrink-0 animate-pulse" />
               <span>Why Tack recommended this</span>
             </div>
             <p className="text-[12px] text-[#92400E] leading-relaxed font-bold">
@@ -181,7 +180,7 @@ export const Approve: React.FC = () => {
             </div>
             
             <div className="flex items-center gap-1.5 mt-1.5 text-[12px] text-tt-muted font-bold justify-center bg-white border border-tt-border rounded-lg py-1 px-3 self-center shadow-sm select-none">
-              <CreditCard size={14} className="text-tt-muted" />
+              <CreditCard size={14} weight="regular" className="text-tt-muted" />
               <span>Visa ending in 4242</span>
             </div>
           </div>

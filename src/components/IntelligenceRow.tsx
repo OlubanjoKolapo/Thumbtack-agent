@@ -1,8 +1,9 @@
 import React from 'react';
-import { Check } from 'lucide-react';
+import { Check } from '@phosphor-icons/react';
+import type { IconProps } from '@phosphor-icons/react';
 
 interface IntelligenceRowProps {
-  icon: React.ComponentType<{ size?: number | string; className?: string }>;
+  icon: React.ComponentType<IconProps>;
   iconBgColor?: string;
   iconColor?: string;
   text: string;
@@ -21,7 +22,7 @@ export const IntelligenceRow: React.FC<IntelligenceRowProps> = ({
       <div className="flex items-center gap-4">
         {/* Source Icon wrapper */}
         <div className={`flex items-center justify-center h-8 w-8 rounded-full ${iconBgColor} ${iconColor}`}>
-          <Icon size={16} />
+          <Icon size={16} weight="regular" />
         </div>
         
         {/* Action text */}
@@ -33,8 +34,8 @@ export const IntelligenceRow: React.FC<IntelligenceRowProps> = ({
       {/* Status indicator on the right */}
       <div className="flex items-center justify-center w-6 h-6">
         {status === 'done' && (
-          <div className="text-[#22C55E] bg-[#DCFCE7] p-1 rounded-full animate-scale-in">
-            <Check size={14} className="stroke-[3]" />
+          <div className="text-[#22C55E] bg-[#DCFCE7] p-0.5 rounded-full animate-scale-in flex items-center justify-center">
+            <Check size={14} weight="regular" />
           </div>
         )}
         {status === 'loading' && (

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Check, MapPin, BadgeCheck, FileText, ArrowRight } from 'lucide-react';
+import { Check, MapPin, Seal, FileText, ArrowRight } from '@phosphor-icons/react';
 import { useBooking } from '../context/BookingContext';
 import { mockProviders } from '../data/providers';
 import { Button } from '../components/Button';
@@ -35,15 +35,15 @@ export const Confirmed: React.FC = () => {
       {/* Ambient background blur lights */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[400px] h-[400px] bg-tt-blue-tint/20 rounded-full blur-[100px] pointer-events-none animate-pulse-subtle" />
 
-      <div className="w-full max-w-[480px] flex flex-col items-center gap-6 relative z-10">
+      <div className="w-full max-w-[480px] flex flex-col items-center gap-6 relative z-10 text-left">
         
-        {/* Celebration animated checkmark circle */}
+        {/* Celebration checkmark circle */}
         <div className="h-16 w-16 rounded-full bg-[#DCFCE7] flex items-center justify-center text-[#16A34A] border-2 border-[#16A34A]/20 shadow-[0_4px_16px_rgba(22,163,74,0.15)] animate-scale-in">
-          <Check size={32} className="stroke-[3.5]" />
+          <Check size={32} weight="regular" />
         </div>
 
         {/* Header Titles */}
-        <div className="text-center">
+        <div className="text-center w-full">
           <h2 className="text-[28px] font-bold font-serif text-tt-navy mb-1.5 leading-tight">
             You're all set.
           </h2>
@@ -74,7 +74,7 @@ export const Confirmed: React.FC = () => {
                   {pro.name}
                 </span>
                 {pro.verified && (
-                  <BadgeCheck size={15} className="text-tt-blue fill-tt-blue-tint shrink-0" />
+                  <Seal size={15} weight="fill" className="text-tt-blue shrink-0" />
                 )}
               </div>
               
@@ -88,11 +88,11 @@ export const Confirmed: React.FC = () => {
           <div className="flex flex-col gap-3.5 bg-tt-page rounded-xl p-4 border border-tt-border shadow-inner">
             <div className="text-[12px] text-tt-navy font-semibold leading-relaxed">
               <span className="font-bold text-[11px] text-tt-muted block uppercase tracking-wider mb-0.5">SCHEDULED TIME</span>
-              {formattedDay}, {pro.availability.replace('Sat ', '')}
+              {formattedDay}, {pro.availability[0]?.replace('Sat ', '') || ''}
             </div>
             
             <div className="text-[12px] text-tt-navy flex items-start gap-1.5 leading-relaxed">
-              <MapPin size={14} className="text-tt-muted mt-0.5 shrink-0" />
+              <MapPin size={14} weight="regular" className="text-tt-muted mt-0.5 shrink-0" />
               <div>
                 <span className="font-bold text-[11px] text-tt-muted block uppercase tracking-wider mb-0.5">SERVICE ADDRESS</span>
                 742 Main St, San Francisco
@@ -112,20 +112,21 @@ export const Confirmed: React.FC = () => {
           <Button
             variant="primary"
             size="lg"
-            className="w-full active-press shadow-md font-bold text-[15px]"
+            className="w-full active-press shadow-md font-bold text-[15px] flex items-center justify-center gap-1.5"
             onClick={handleTrack}
           >
-            Track your job <ArrowRight size={16} className="ml-1.5 shrink-0" />
+            <span>Track your job</span>
+            <ArrowRight size={16} weight="regular" className="shrink-0" />
           </Button>
           
           <Button
             variant="secondary"
             size="lg"
-            className="w-full active-press font-bold text-[15px]"
+            className="w-full active-press font-bold text-[15px] flex items-center justify-center gap-1.5"
             onClick={handleViewReceipt}
           >
-            <FileText size={16} className="mr-1.5 text-tt-muted shrink-0" />
-            View receipt
+            <FileText size={16} weight="regular" className="text-tt-muted shrink-0" />
+            <span>View receipt</span>
           </Button>
         </div>
 

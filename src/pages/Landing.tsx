@@ -1,207 +1,208 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MapPin, MessageSquare, Search, CalendarCheck, ArrowRight } from 'lucide-react';
+import { MagnifyingGlass, Microphone, ChatCircle, CalendarBlank } from '@phosphor-icons/react';
 import { Button } from '../components/Button';
 import { Card } from '../components/Card';
-import { Badge } from '../components/Badge';
-
-// Import image assets
-import claudeLogo from '../assets/claude logo.png';
-import chatgptLogo from '../assets/ChatGPT-Logo.png';
-import mcpLogo from '../assets/Mcp logo.webp';
 
 export const Landing: React.FC = () => {
   const navigate = useNavigate();
+  const [query, setQuery] = useState('');
 
-  const handleTryTack = () => {
-    navigate('/connect');
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (query.trim()) {
+      navigate('/chat', { state: { initialQuery: query } });
+    }
   };
 
-  const scrollToHowItWorks = () => {
-    document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' });
+  const handleQuickStart = (text: string) => {
+    navigate('/chat', { state: { initialQuery: text } });
   };
 
   return (
-    <div className="w-full flex flex-col animate-page-in relative">
-      {/* Floating Demo Trigger (Watch Tack work) */}
-      <div className="fixed bottom-6 right-6 z-50 animate-page-in">
-        <Button
-          variant="primary"
-          size="lg"
-          className="shadow-[0_8px_30px_rgba(28,43,51,0.25)] border-2 border-white/10 active-press pr-7 pl-6"
-          onClick={() => navigate('/demo')}
-          withArrow
-        >
-          Watch Tack work
-        </Button>
-      </div>
-
-      {/* SECTION 1 — Thumbtack hero */}
-      <section className="bg-tt-dark relative overflow-hidden min-h-[500px] flex flex-col justify-center items-center px-4 py-20 text-center text-white">
-        {/* Subtle dot pattern background */}
-        <div className="absolute inset-0 opacity-20 bg-dot-pattern-dark z-0" />
+    <div className="flex-grow flex flex-col bg-tt-page min-h-screen">
+      
+      {/* SECTION 1: HERO */}
+      <section className="relative bg-tt-dark min-h-[460px] py-16 flex flex-col justify-center items-center overflow-hidden border-b border-tt-border select-none">
+        {/* Geometric dot pattern overlay on dark */}
+        <div className="absolute inset-0 bg-dot-pattern-dark opacity-10 pointer-events-none" />
         
-        {/* Soft radial backdrop glow */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-tt-blue/15 rounded-full blur-[140px] pointer-events-none z-0" />
-        
-        <div className="relative z-10 max-w-[800px] w-full flex flex-col items-center">
-          <h1 className="text-white text-[38px] md:text-[48px] font-bold tracking-tight mb-4 font-serif leading-tight">
-            For everything home <span className="italic font-normal font-serif text-white/90">could be.</span>
-          </h1>
-          <p className="text-[15px] md:text-[18px] text-white/70 max-w-[580px] mb-10 font-sans leading-relaxed">
-            Find local pros for repairs, upgrades, and projects big or small — all in one place
-          </p>
-
-          {/* Floating Premium Search Bar */}
-          <div className="w-full max-w-[560px] bg-white h-[58px] rounded-full p-1.5 flex items-center shadow-[0_12px_30px_rgba(0,0,0,0.25)] border border-white/10 mb-8 transition-transform focus-within:scale-[1.01] duration-300">
-            <div className="flex-grow flex items-center pl-4 text-tt-navy">
-              <MapPin size={20} className="text-tt-blue mr-3 shrink-0" />
-              <span className="text-tt-muted text-sm md:text-base font-semibold select-none truncate">
-                Our backyard next
-              </span>
+        {/* Navigation Bar inside Hero */}
+        <div className="absolute top-0 left-0 w-full h-[60px] flex items-center justify-between px-8 border-b border-white/5 bg-transparent shrink-0">
+          <div className="flex items-center gap-2">
+            {/* Custom Thumbtack T logo circle */}
+            <div className="w-9 h-9 rounded-full bg-tt-blue flex items-center justify-center shadow-sm select-none">
+              <span className="font-serif font-extrabold text-[16px] text-white leading-none">T</span>
             </div>
-            <button className="bg-tt-dark text-white text-xs md:text-sm font-bold rounded-full px-6 h-full hover:bg-tt-blue transition-all duration-300 active-press flex items-center gap-1.5 shrink-0 shadow-sm">
-              Find a pro <ArrowRight size={14} className="stroke-[2.5]" />
+            <span className="font-serif font-bold text-[18px] text-white tracking-tight">Thumbtack</span>
+          </div>
+
+          <div className="hidden md:flex items-center gap-6">
+            <span className="text-[14px] text-white/70 hover:text-white transition-colors cursor-pointer font-sans font-medium">Sign up as a pro</span>
+            <span className="text-[14px] text-white/70 hover:text-white transition-colors cursor-pointer font-sans font-medium">Plan</span>
+            <span className="text-[14px] text-white/70 hover:text-white transition-colors cursor-pointer font-sans font-medium">Team</span>
+            <button 
+              onClick={() => navigate('/chat')}
+              className="bg-tt-blue hover:bg-tt-deep text-white font-bold text-[14px] h-9 px-4 rounded-full transition-all shadow-sm cursor-pointer select-none"
+            >
+              Try Tack
             </button>
           </div>
-
-          {/* Trust statistics row */}
-          <div className="text-[12px] text-white/50 font-semibold tracking-wider uppercase font-sans">
-            4.9 ★ from 944k reviews &middot; 300K+ local pros &middot; 100M+ projects
-          </div>
         </div>
-      </section>
 
-      {/* SECTION 2 — Tack feature introduction */}
-      <section className="bg-white py-[100px] px-4 text-center relative border-b border-tt-border">
-        {/* Ambient top light */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[400px] h-[150px] bg-tt-blue-tint/40 rounded-full blur-[80px] pointer-events-none" />
+        {/* Content Centered */}
+        <div className="w-full max-w-[640px] px-6 text-center mt-12 flex flex-col items-center gap-5 relative z-10">
+          
+          <h1 className="text-[48px] font-bold font-serif text-white leading-tight tracking-tight max-w-[500px]">
+            Book any local pro.<br />
+            Just tell Tack.
+          </h1>
 
-        <div className="max-w-[800px] mx-auto flex flex-col items-center relative z-10">
-          {/* Introducing badge */}
-          <Badge variant="blue" className="mb-6 border border-tt-blue/30 px-3.5 py-1 font-bold text-[11px] tracking-widest shadow-sm flex items-center gap-1">
-            <span className="inline-block w-1.5 h-1.5 rounded-full bg-tt-blue animate-ping" />
-            ✦ Introducing Tack
-          </Badge>
-
-          {/* Serif display headings with italicized accents */}
-          <h2 className="text-[34px] md:text-[42px] font-bold text-tt-navy leading-tight font-serif mb-2">
-            Book any pro. Just tell <span className="italic font-normal">your agent.</span>
-          </h2>
-          <h2 className="text-[34px] md:text-[42px] font-bold text-tt-blue font-serif mb-8">
-            Tack handles the rest.
-          </h2>
-
-          <p className="text-[15px] md:text-[17px] text-tt-muted max-w-[580px] mb-10 font-sans leading-[1.75]">
-            Connect your favorite AI — Claude, ChatGPT, or any MCP-compatible agent. 
-            Tell it what you need and when. Tack queries Thumbtack's 300K+ verified pros, 
-            finds the best match, and books them. <span className="text-tt-navy font-semibold">No messaging back and forth. No ghosting. Just done.</span>
+          <p className="text-[15px] md:text-[18px] text-white/70 max-w-[480px] leading-relaxed font-sans font-semibold">
+            Describe what you need. Tack finds your top matches, answers your questions, and books the right pro — all in one conversation.
           </p>
 
-          {/* CTA Row */}
-          <div className="flex flex-col sm:flex-row gap-4 mb-14 w-full sm:w-auto">
-            <Button variant="primary" size="lg" className="px-8 shadow-md active-press" onClick={handleTryTack} withArrow>
-              Try Tack
-            </Button>
-            <Button variant="outline" size="lg" className="px-8 active-press" onClick={scrollToHowItWorks}>
-              See how it works
-            </Button>
-          </div>
-
-          {/* Works with your agent trust logos */}
-          <div className="flex flex-col items-center gap-4">
-            <span className="text-[11px] font-bold tracking-widest text-tt-muted uppercase font-sans">
-              WORKS WITH YOUR AGENT
-            </span>
-            
-            <div className="flex flex-wrap justify-center items-center gap-3">
-              {/* Claude logo card */}
-              <div className="flex items-center gap-2 bg-white border border-tt-border h-[38px] rounded-full pl-2 pr-4 text-[13px] font-semibold text-tt-navy select-none shadow-[0_2px_6px_rgba(28,43,51,0.03)] hover:border-tt-blue transition-all duration-300 hover:scale-[1.02]">
-                <img src={claudeLogo} className="w-[22px] h-[22px] rounded-full object-cover shrink-0" alt="Claude logo" />
-                Claude
-              </div>
-              {/* ChatGPT logo card */}
-              <div className="flex items-center gap-2 bg-white border border-tt-border h-[38px] rounded-full pl-2 pr-4 text-[13px] font-semibold text-tt-navy select-none shadow-[0_2px_6px_rgba(28,43,51,0.03)] hover:border-tt-blue transition-all duration-300 hover:scale-[1.02]">
-                <img src={chatgptLogo} className="w-[22px] h-[22px] rounded-full object-cover shrink-0" alt="ChatGPT logo" />
-                ChatGPT
-              </div>
-              {/* Custom MCP logo card */}
-              <div className="flex items-center gap-2 bg-white border border-tt-border h-[38px] rounded-full pl-2 pr-4 text-[13px] font-semibold text-tt-navy select-none shadow-[0_2px_6px_rgba(28,43,51,0.03)] hover:border-tt-blue transition-all duration-300 hover:scale-[1.02]">
-                <img src={mcpLogo} className="w-[22px] h-[22px] rounded-full object-contain shrink-0" alt="MCP logo" />
-                Any MCP agent
-              </div>
+          {/* Search bar pill */}
+          <form onSubmit={handleSubmit} className="w-full max-w-[560px] bg-white rounded-full h-14 p-1.5 flex items-center shadow-2xl mt-4 border border-white/10">
+            <div className="flex items-center gap-2.5 flex-grow px-3.5 min-w-0">
+              <MagnifyingGlass size={20} weight="regular" className="text-[#64748B] shrink-0" />
+              <input
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="What do you need done? e.g. fix a leaking pipe..."
+                className="bg-transparent border-0 outline-none w-full text-tt-navy text-[15px] font-sans font-semibold placeholder:text-tt-muted focus:ring-0 p-0"
+              />
             </div>
+            
+            <button
+              type="submit"
+              className="bg-tt-blue hover:bg-tt-deep text-white font-bold text-[15px] px-5 h-11 rounded-full shrink-0 transition-all flex items-center justify-center cursor-pointer select-none"
+            >
+              Find a pro &rarr;
+            </button>
+          </form>
+
+          {/* Voice button */}
+          <button 
+            type="button" 
+            onClick={() => handleQuickStart("Explain plumbing repairs near me")}
+            className="flex items-center gap-1.5 text-white/60 hover:text-white transition-colors text-[12px] font-bold tracking-wide mt-1 cursor-pointer select-none"
+          >
+            <Microphone size={16} weight="regular" />
+            <span>or use your voice</span>
+          </button>
+
+          {/* Trust stats row */}
+          <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 mt-4 text-[13px] text-white/50 font-sans font-bold select-none">
+            <span>4.9 ★ from 944k reviews</span>
+            <span>300K+ local pros</span>
+            <span>100M+ projects completed</span>
           </div>
+
         </div>
       </section>
 
-      {/* HOW IT WORKS */}
-      <section id="how-it-works" className="bg-tt-page py-[80px] px-4 relative overflow-hidden">
-        {/* Soft dot pattern */}
-        <div className="absolute inset-0 bg-dot-pattern opacity-40 pointer-events-none" />
+      {/* SECTION 2: INTRODUCING TACK */}
+      <section className="bg-white py-20 px-6 text-center flex flex-col items-center">
+        <div className="inline-flex items-center bg-[#E8F7FC] text-tt-blue border border-[#009FD4]/40 px-3 py-1 rounded-full text-[12px] font-bold tracking-wider select-none mb-4">
+          ✦ Introducing Tack
+        </div>
+        
+        <h2 className="text-[32px] md:text-[36px] font-bold font-serif text-[#1D3557] mt-3">
+          Your smartest way to hire.
+        </h2>
+        <h2 className="text-[32px] md:text-[36px] font-bold font-serif text-tt-blue leading-none">
+          Just describe it.
+        </h2>
 
-        <div className="max-w-6xl mx-auto flex flex-col items-center relative z-10">
-          <span className="text-[11px] font-bold tracking-widest text-tt-muted uppercase font-sans mb-3">
-            HOW TACK WORKS
-          </span>
-          <h2 className="text-[28px] md:text-[34px] font-bold text-tt-navy font-serif mb-16 text-center">
-            From request to booked. <span className="italic font-normal">In seconds.</span>
-          </h2>
+        <p className="text-[17px] text-[#64748B] max-w-[520px] mt-5 leading-relaxed font-sans font-medium">
+          No filters. No forms. No ghosting. Tell Tack what you need and when — it searches Thumbtack's 300K+ verified pros, ranks the best matches, and lets you ask anything before you book.
+        </p>
 
-          <div className="relative w-full grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Dashed connector line for desktop only */}
-            <div className="hidden md:block absolute top-[100px] left-[15%] right-[15%] h-[1px] border-t border-dashed border-tt-border z-0" />
-
-            {/* Step 1 */}
-            <Card hoverable={true} className="flex flex-col items-center text-center relative z-10 p-7 bg-white border border-tt-border rounded-2xl shadow-sm">
-              <span className="text-[48px] font-bold text-tt-blue-tint font-sans leading-none mb-2 select-none">
-                01
-              </span>
-              <div className="w-14 h-14 rounded-full bg-tt-blue-tint flex items-center justify-center text-tt-blue mb-5 border border-tt-blue/10 shadow-inner">
-                <MessageSquare size={24} className="stroke-[1.75]" />
-              </div>
-              <h3 className="text-lg font-bold text-tt-navy mb-2.5 font-sans">
-                Tell your agent
-              </h3>
-              <p className="text-sm text-tt-muted leading-relaxed font-sans">
-                Say what you need in plain language. Your agent figures out the rest.
-              </p>
-            </Card>
-
-            {/* Step 2 */}
-            <Card hoverable={true} className="flex flex-col items-center text-center relative z-10 p-7 bg-white border border-tt-border rounded-2xl shadow-sm">
-              <span className="text-[48px] font-bold text-tt-blue-tint font-sans leading-none mb-2 select-none">
-                02
-              </span>
-              <div className="w-14 h-14 rounded-full bg-tt-blue-tint flex items-center justify-center text-tt-blue mb-5 border border-tt-blue/10 shadow-inner">
-                <Search size={24} className="stroke-[1.75]" />
-              </div>
-              <h3 className="text-lg font-bold text-tt-navy mb-2.5 font-sans">
-                Agent searches Tack
-              </h3>
-              <p className="text-sm text-tt-muted leading-relaxed font-sans">
-                Tack's API returns ranked pros with live availability and real pricing. No scraping.
-              </p>
-            </Card>
-
-            {/* Step 3 */}
-            <Card hoverable={true} className="flex flex-col items-center text-center relative z-10 p-7 bg-white border border-tt-border rounded-2xl shadow-sm">
-              <span className="text-[48px] font-bold text-tt-blue-tint font-sans leading-none mb-2 select-none">
-                03
-              </span>
-              <div className="w-14 h-14 rounded-full bg-tt-blue-tint flex items-center justify-center text-tt-blue mb-5 border border-tt-blue/10 shadow-inner">
-                <CalendarCheck size={24} className="stroke-[1.75]" />
-              </div>
-              <h3 className="text-lg font-bold text-tt-navy mb-2.5 font-sans">
-                You approve. It's booked.
-              </h3>
-              <p className="text-sm text-tt-muted leading-relaxed font-sans">
-                One tap to confirm. Pro gets notified instantly. You get a receipt.
-              </p>
-            </Card>
-          </div>
+        <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
+          <Button 
+            variant="primary" 
+            size="lg" 
+            className="px-8 font-bold text-[15px] h-12 shadow" 
+            onClick={() => navigate('/chat')}
+          >
+            Try Tack now &rarr;
+          </Button>
+          <Button 
+            variant="outline" 
+            size="lg" 
+            className="px-8 font-bold text-[15px] h-12 text-[#1D3557]" 
+            onClick={() => handleQuickStart("Mount a TV in my living room")}
+          >
+            See how it works
+          </Button>
         </div>
       </section>
+
+      {/* SECTION 3: HOW IT WORKS */}
+      <section className="bg-[#F5F7FA] py-16 px-6 border-t border-tt-border">
+        <span className="text-[11px] font-bold tracking-widest text-[#64748B] uppercase block text-center select-none">
+          How Tack works
+        </span>
+        <h2 className="text-[32px] font-bold font-serif text-[#1D3557] mt-2 text-center">
+          From request to booked. Three steps.
+        </h2>
+
+        <div className="max-w-[880px] mx-auto grid grid-cols-1 md:grid-cols-3 gap-5 mt-10">
+          {/* Card 1 */}
+          <Card hoverable={false} className="bg-white rounded-2xl p-7 shadow-sm text-center flex flex-col items-center">
+            <div className="text-[40px] font-bold text-[#E8F7FC] select-none leading-none">01</div>
+            <ChatCircle size={24} weight="regular" className="text-tt-blue mt-3" />
+            <h3 className="text-[16px] font-bold text-[#1D3557] mt-3 font-sans">Tell Tack what you need</h3>
+            <p className="text-[14px] text-[#64748B] mt-2 leading-relaxed font-medium">
+              Plain language. No forms. Say it like you'd text a friend.
+            </p>
+          </Card>
+
+          {/* Card 2 */}
+          <Card hoverable={false} className="bg-white rounded-2xl p-7 shadow-sm text-center flex flex-col items-center">
+            <div className="text-[40px] font-bold text-[#E8F7FC] select-none leading-none">02</div>
+            <MagnifyingGlass size={24} weight="regular" className="text-tt-blue mt-3" />
+            <h3 className="text-[16px] font-bold text-[#1D3557] mt-3 font-sans">Tack finds your best matches</h3>
+            <p className="text-[14px] text-[#64748B] mt-2 leading-relaxed font-medium">
+              Top 5 pros ranked by rating, availability, price, and proximity to you.
+            </p>
+          </Card>
+
+          {/* Card 3 */}
+          <Card hoverable={false} className="bg-white rounded-2xl p-7 shadow-sm text-center flex flex-col items-center">
+            <div className="text-[40px] font-bold text-[#E8F7FC] select-none leading-none">03</div>
+            <CalendarBlank size={24} weight="regular" className="text-tt-blue mt-3" />
+            <h3 className="text-[16px] font-bold text-[#1D3557] mt-3 font-sans">Ask, compare, book</h3>
+            <p className="text-[14px] text-[#64748B] mt-2 leading-relaxed font-medium">
+              Ask anything. Expand profiles. Book or request an estimate.
+            </p>
+          </Card>
+        </div>
+      </section>
+
+      {/* SECTION 4: TRUST BRAND */}
+      <section className="bg-white py-12 px-6 border-t border-tt-border">
+        <span className="text-[14px] text-[#64748B] text-center block mb-6 font-sans font-semibold select-none">
+          Powered by Thumbtack's network
+        </span>
+
+        <div className="flex flex-wrap gap-x-6 gap-y-3 justify-center items-center font-sans font-bold text-[14px] text-[#1D3557] select-none">
+          <div className="flex items-center gap-1.5">
+            {/* Logo marker */}
+            <div className="w-6 h-6 rounded-full bg-tt-blue flex items-center justify-center shrink-0">
+              <span className="font-serif font-extrabold text-[11px] text-white leading-none">T</span>
+            </div>
+            <span>300K+ verified pros</span>
+          </div>
+          <span className="text-slate-200 hidden sm:inline">&middot;</span>
+          <span>Background checked</span>
+          <span className="text-slate-200 hidden sm:inline">&middot;</span>
+          <span>Money-back guarantee</span>
+        </div>
+      </section>
+
     </div>
   );
 };

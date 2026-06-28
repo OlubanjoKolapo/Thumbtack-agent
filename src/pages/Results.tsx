@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, BadgeCheck, Calendar, MapPin, DollarSign, Sparkles, ChevronDown, Star } from 'lucide-react';
+import { ArrowLeft, Seal, CalendarBlank, MapPin, CurrencyDollar, CaretDown, Star } from '@phosphor-icons/react';
 import { useBooking } from '../context/BookingContext';
 import { mockProviders } from '../data/providers';
 import { Button } from '../components/Button';
@@ -35,7 +35,7 @@ export const Results: React.FC = () => {
   const displaySummary = `3 pros found · Saturday AM · under $${spendLimit}`;
 
   return (
-    <div className="flex-grow bg-tt-page min-h-screen pb-16 animate-page-in font-sans">
+    <div className="flex-grow bg-tt-page min-h-screen pb-16 animate-page-in font-sans text-left">
       
       {/* Glassmorphic Sticky Filter Nav Bar */}
       <div className="bg-white/90 backdrop-blur-md border-b border-tt-border h-[60px] px-4 md:px-8 sticky top-[60px] z-30 shadow-[0_2px_8px_rgba(28,43,51,0.02)]">
@@ -45,7 +45,7 @@ export const Results: React.FC = () => {
             onClick={handleBack}
             className="flex items-center gap-1.5 text-[15px] font-bold text-tt-navy hover:text-tt-blue cursor-pointer transition-colors"
           >
-            <ArrowLeft size={16} className="stroke-[2.5]" />
+            <ArrowLeft size={16} weight="regular" />
             New request
           </button>
 
@@ -66,7 +66,7 @@ export const Results: React.FC = () => {
               <option value="price">Price</option>
               <option value="rating">Rating</option>
             </select>
-            <ChevronDown size={12} className="text-tt-navy absolute right-2.5 pointer-events-none stroke-[2.5]" />
+            <CaretDown size={12} weight="regular" className="text-tt-navy absolute right-2.5 pointer-events-none" />
           </div>
         </div>
       </div>
@@ -88,7 +88,7 @@ export const Results: React.FC = () => {
           >
             {/* Best Match Header badge row */}
             <div className="flex items-center justify-between">
-              <Badge variant="blue" className="text-[12px] font-bold px-3 py-1 shadow-sm">
+              <Badge variant="dark" className="text-[12px] font-bold px-3 py-1 shadow-sm">
                 Best match
               </Badge>
               
@@ -96,7 +96,6 @@ export const Results: React.FC = () => {
                 onClick={() => handleSelectPro(bestMatch.id)}
                 className="text-[12px] font-bold text-tt-blue hover:text-tt-deep hover:underline cursor-pointer transition-colors flex items-center gap-1"
               >
-                <Sparkles size={12} className="text-tt-blue animate-pulse" />
                 Why Tack picked this
               </button>
             </div>
@@ -105,14 +104,14 @@ export const Results: React.FC = () => {
             <div className="flex gap-4">
               <Avatar initials={bestMatch.initials} imageSrc={bestMatch.imageSrc} size="md" className="shrink-0 shadow-sm" />
               <div className="flex-grow min-w-0">
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1.5 flex-wrap">
                   <h3 className="text-[15px] font-bold text-tt-navy truncate">
                     {bestMatch.name}
                   </h3>
                   {bestMatch.verified && (
-                    <BadgeCheck size={16} className="text-tt-blue fill-tt-blue-tint shrink-0" />
+                    <Seal size={16} weight="fill" className="text-tt-blue shrink-0" />
                   )}
-                  <span className="text-[12px] text-tt-blue font-bold tracking-wide uppercase shrink-0">
+                  <span className="text-[11px] text-tt-blue font-bold tracking-wide uppercase shrink-0">
                     Verified pro
                   </span>
                 </div>
@@ -123,7 +122,7 @@ export const Results: React.FC = () => {
                 
                 {/* Ratings */}
                 <div className="flex items-center gap-1 mt-1 text-[12px]">
-                  <Star size={12} className="text-tt-star fill-tt-star stroke-none" />
+                  <Star size={12} weight="fill" color="#F4A623" className="shrink-0" />
                   <span className="font-bold text-tt-navy">{bestMatch.rating}</span>
                   <span className="text-tt-muted">({bestMatch.reviewCount} reviews)</span>
                 </div>
@@ -139,18 +138,18 @@ export const Results: React.FC = () => {
 
             {/* Highlights details chips row */}
             <div className="flex flex-wrap gap-2 pt-1">
-              <div className="flex items-center gap-1.5 bg-tt-page border border-tt-border rounded-xl px-3 py-1.5 text-[12px] text-tt-navy font-semibold shadow-sm hover:border-tt-blue transition-all duration-300">
-                <Calendar size={13} className="text-tt-muted" />
-                <span>{bestMatch.availability} available</span>
+              <div className="flex items-center gap-1.5 bg-tt-page border border-tt-border rounded-xl px-3 py-1.5 text-[12px] text-tt-navy font-semibold shadow-sm hover:border-slate-400 transition-all duration-300">
+                <CalendarBlank size={13} weight="regular" className="text-tt-muted" />
+                <span>{bestMatch.availability[0]} available</span>
               </div>
               
-              <div className="flex items-center gap-1.5 bg-tt-page border border-tt-border rounded-xl px-3 py-1.5 text-[12px] text-tt-navy font-semibold shadow-sm hover:border-tt-blue transition-all duration-300">
-                <MapPin size={13} className="text-tt-muted" />
+              <div className="flex items-center gap-1.5 bg-tt-page border border-tt-border rounded-xl px-3 py-1.5 text-[12px] text-tt-navy font-semibold shadow-sm hover:border-slate-400 transition-all duration-300">
+                <MapPin size={13} weight="regular" className="text-tt-muted" />
                 <span>{bestMatch.distanceMiles} miles away</span>
               </div>
               
-              <div className="flex items-center gap-1.5 bg-tt-page border border-tt-border rounded-xl px-3 py-1.5 text-[12px] text-tt-navy font-semibold shadow-sm hover:border-tt-blue transition-all duration-300">
-                <DollarSign size={13} className="text-tt-muted" />
+              <div className="flex items-center gap-1.5 bg-tt-page border border-tt-border rounded-xl px-3 py-1.5 text-[12px] text-tt-navy font-semibold shadow-sm hover:border-slate-400 transition-all duration-300">
+                <CurrencyDollar size={13} weight="regular" className="text-tt-muted" />
                 <span>${bestMatch.price} {bestMatch.priceUnit} rate</span>
               </div>
             </div>
@@ -158,7 +157,6 @@ export const Results: React.FC = () => {
             {/* Honey yellow AI reasoning block */}
             {bestMatch.matchReason && (
               <div className="bg-[#FFFBEB] border border-[#FDE68A] rounded-xl p-3.5 flex gap-2.5 shadow-[inset_0_1px_2px_rgba(253,230,138,0.2)]">
-                <Sparkles size={16} className="text-[#F59E0B] shrink-0 mt-0.5 animate-pulse" />
                 <p className="text-[12px] text-[#92400E] leading-relaxed font-bold">
                   {bestMatch.matchReason}
                 </p>
@@ -172,7 +170,7 @@ export const Results: React.FC = () => {
               className="w-full mt-1 active-press shadow-md"
               onClick={() => handleSelectPro(bestMatch.id)}
             >
-              Book via Tack →
+              Book via Tack &rarr;
             </Button>
           </Card>
         )}
@@ -200,7 +198,7 @@ export const Results: React.FC = () => {
                         {pro.name}
                       </h4>
                       {pro.verified && (
-                        <BadgeCheck size={16} className="text-tt-blue fill-tt-blue-tint shrink-0" />
+                        <Seal size={16} weight="fill" className="text-tt-blue shrink-0" />
                       )}
                     </div>
                     
@@ -209,7 +207,7 @@ export const Results: React.FC = () => {
                     </p>
                     
                     <div className="flex items-center gap-1 mt-0.5 text-[12px]">
-                      <Star size={12} className="text-tt-star fill-tt-star stroke-none" />
+                      <Star size={12} weight="fill" color="#F4A623" className="shrink-0" />
                       <span className="font-bold text-tt-navy">{pro.rating}</span>
                       <span className="text-tt-muted">({pro.reviewCount} reviews)</span>
                     </div>
@@ -229,7 +227,7 @@ export const Results: React.FC = () => {
                 {/* Details layout row */}
                 <div className="flex items-center justify-between gap-2 border-t border-tt-page pt-3.5">
                   <div className="flex gap-3 text-[12px] text-tt-muted font-semibold">
-                    <span>{pro.availability}</span>
+                    <span>{pro.availability[0]}</span>
                     <span className="text-tt-border select-none">|</span>
                     <span>{pro.distanceMiles} miles away</span>
                   </div>
